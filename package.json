@@ -1,0 +1,34 @@
+{
+  "name": "serialport-gsm",
+  "version": "1.0.0",
+  "description": "Serialport implementation for GSM commands (send text/flash messages, read, etc.)",
+  "main": "lib/",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "pdu": "^1.1.0",
+    "serialport": "^6.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zabsalahid/serialport-gsm.git"
+  },
+  "keywords": [
+    "gsm",
+    "at",
+    "commands",
+    "modem",
+    "sms"
+  ],
+  "author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zabsalahid/serialport-gsm/issues"
+  },
+  "homepage": "https://github.com/zabsalahid/serialport-gsm#readme"
+}
