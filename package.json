@@ -35,6 +35,13 @@
     "class 0"
   ],
   "author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
+  "contributors": [
+    {
+      "name": "Paolo Brainard M. Reyes",
+      "email": "xreyes.paolox@gmail.com",
+      "url": "http://360logix.com"
+    }
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/zabsalahid/serialport-gsm/issues"

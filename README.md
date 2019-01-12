@@ -132,7 +132,7 @@ modem.on('onNewMessage', messageDetails)
 ```
 
 ## SerialPort
-Access base serialport. Please refer to [***SerialPort@6.2.2***](https://www.npmjs.com/package/serialport/v/6.2.2) for documentation
+Access base serialport. Please refer to [***SerialPort@7.1.1***](https://www.npmjs.com/package/serialport/v/6.2.2) for documentation
 ```
 modem.port
 ```
