@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "pdu": "^1.1.0",
-    "serialport": "^6.2.0"
+    "s-": "0.0.1",
+    "serialport": "^6.2.2"
   },
   "devDependencies": {},
   "scripts": {
@@ -23,7 +24,15 @@
     "at",
     "commands",
     "modem",
-    "sms"
+    "sms",
+    "iot",
+    "serial port",
+    "serialport",
+    "serial",
+    "com",
+    "port",
+    "flash message",
+    "class 0"
   ],
   "author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
   "license": "ISC",
