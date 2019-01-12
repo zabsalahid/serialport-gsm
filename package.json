@@ -9,7 +9,7 @@
   "dependencies": {
     "pdu": "^1.1.0",
     "s-": "0.0.1",
-    "serialport": "^6.2.2"
+    "serialport": "^7.1.1"
   },
   "devDependencies": {},
   "scripts": {
