@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "pdu": "^1.1.0",
-    "s-": "0.0.1",
     "serialport": "^7.1.3"
   },
   "devDependencies": {
