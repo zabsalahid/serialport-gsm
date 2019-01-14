@@ -100,6 +100,12 @@ modem.getNetworkSignal(callback)
 modem.getOwnNumber(callback)
 ```
 
+#### Set Own Number
+`setOwnNumber('number', callback, name[optional || default 'OwnNumber'])`
+```
+modem.getOwnNumber(number, callback)
+```
+
 #### Execute AT Command
 ```
 modem.executeCommand(callback, priority, timeout)
