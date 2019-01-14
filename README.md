@@ -94,6 +94,12 @@ modem.getNetworkSignal(callback)
 ```
 modem.getNetworkSignal(callback)
 ```
+
+#### Get Own Number
+```
+modem.getOwnNumber(callback)
+```
+
 #### Execute AT Command
 ```
 modem.executeCommand(callback, priority, timeout)
@@ -132,7 +138,7 @@ modem.on('onNewMessage', messageDetails)
 ```
 
 ## SerialPort
-Access base serialport. Please refer to [***SerialPort@7.1.1***](https://www.npmjs.com/package/serialport/v/6.2.2) for documentation
+Access base serialport. Please refer to [***SerialPort Docs***](https://serialport.io/docs/en/api-serialport) for documentation
 ```
 modem.port
 ```
