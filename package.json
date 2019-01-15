@@ -44,7 +44,7 @@
       "url": "http://360logix.com"
     }
   ],
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/zabsalahid/serialport-gsm/issues"
   },
