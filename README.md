@@ -2,7 +2,7 @@
 
 ## Intro
 
-SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primarily for sms)
+SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primarily for sms) (Focused in `PDU` mode)
 ***
 ## Table of Contents
 
@@ -31,6 +31,11 @@ serialportgsm.list((err, result) => {
 #### Opening a Port
 Call other functions after the port has been opened.
 `open(path, options, callback)`
+When opening a serial port, specify (in this order)
+1. Path to Serial Port - required.
+2. Options - optional `(see sample options on code)`.
+    * `autoDeleteOnReceive` - Set to `true` to delete from sim after receiving | Default is `false`
+    * `enableConcatenation` - Set to `true` to receive concatenated messages as one | Default is `false`
 ```js
 let serialportgsm = require('serialport-gsm')
 let modem = serialportgsm.Modem()
@@ -57,15 +62,6 @@ modem.on('open', data => {
 })
 ```
 
-#### Set Modem Mode
-`setModemMode(callback, type)`
-* type can be `'PDU'` or `'SMS'`
-```
-modem.on('open', data => {
-    modem.setModemMode(callback, 'PDU')
-})
-```
-
 #### Send Message
 Sends sms.
 `sendSMS(recipient, message, alert, callback)`
@@ -75,6 +71,19 @@ Sends sms.
 ```
 modem.sendSMS('0999XXXXX19', 'Hello there Zab!', true, callback)
 ```
+
+#### Get Sim Inbox
+Shows messages of sim inbox
+```
+modem.getSimInbox(callback)
+```
+
+#### Delete Sim Message
+Delete a sim message by message index
+```
+modem.deleteMessage(index, callback)
+```
+
 #### Delete All Sim Messages
 ```
 modem.deleteAllSimMessages(callback)
@@ -130,12 +139,12 @@ modem.on('error', result => { //do something })
 
 #### onSendingMessage
 ```
-modem.on('onSendingMessage', data => { status, request, data })
+modem.on('onSendingMessage', result => { status, request, data })
 ```
 
 #### onNewMessageIndicator
 ```
-modem.on('onNewMessageIndicator', data => { sender, timeSent })
+modem.on('onNewMessageIndicator', result => { sender, timeSent })
 ```
 
 #### onNewMessage
@@ -150,5 +159,5 @@ modem.port
 ```
 
 ## License
-SerialPort-GSM is [ISC licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
+SerialPort-GSM is [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
 
