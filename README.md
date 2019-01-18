@@ -49,7 +49,9 @@ let options = {
     rtscts: false,
     xoff: false,
     xany: false,
-    buffersize: 0
+    buffersize: 0,
+    autoDeleteOnReceive: true
+    enableConcatenation: true
 }
 
 modem.open('COM', options, callback[Optional])
@@ -59,6 +61,16 @@ This function starts the modem. (If your port fails to work or does not respond 
 ```
 modem.on('open', data => {
     modem.initializeModem(callback[optional])
+})
+```
+
+#### Set Modem Mode
+`setModemMode(callback, type)`
+* type can be `'PDU'` or `'SMS'`
+* All functions are `PDU` mode only yet.
+```
+modem.on('open', data => {
+    modem.setModemMode(callback, 'PDU')
 })
 ```
 
@@ -73,15 +85,17 @@ modem.sendSMS('0999XXXXX19', 'Hello there Zab!', true, callback)
 ```
 
 #### Get Sim Inbox
-Shows messages of sim inbox
+Returns an array of messageObject from sim inbox
 ```
 modem.getSimInbox(callback)
 ```
 
 #### Delete Sim Message
-Delete a sim message by message index
+Delete a sim message by messageObject
+* Refer to returned data of `getSimInbox()`
+* If `enableConcatenation == true`, will delete others parts of message, else, manually delete it per index part
 ```
-modem.deleteMessage(index, callback)
+modem.deleteMessage(messageObj, callback)
 ```
 
 #### Delete All Sim Messages
