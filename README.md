@@ -1,5 +1,5 @@
 # Node SerialPort-GSM
-[![NPM](https://nodei.co/npm-dl/serialport-gsm.png)](https://nodei.co/npm/serialport-gsm/)
+[![NPM](https://nodei.co/npm/serialport-gsm.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/serialport-gsm/)
 
 ## Intro
 SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primarily for sms) (Focused in `PDU` mode)
