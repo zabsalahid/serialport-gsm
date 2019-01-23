@@ -1,8 +1,9 @@
 # Node SerialPort-GSM
+[![NPM](https://nodei.co/npm-dl/serialport-gsm.png)](https://nodei.co/npm/serialport-gsm/)
 
 ## Intro
-
 SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primarily for sms) (Focused in `PDU` mode)
+
 ***
 ## Table of Contents
 
@@ -49,9 +50,7 @@ let options = {
     rtscts: false,
     xoff: false,
     xany: false,
-    buffersize: 0,
-    autoDeleteOnReceive: true
-    enableConcatenation: true
+    buffersize: 0
 }
 
 modem.open('COM', options, callback[Optional])
@@ -61,16 +60,6 @@ This function starts the modem. (If your port fails to work or does not respond 
 ```
 modem.on('open', data => {
     modem.initializeModem(callback[optional])
-})
-```
-
-#### Set Modem Mode
-`setModemMode(callback, type)`
-* type can be `'PDU'` or `'SMS'`
-* All functions are `PDU` mode only yet.
-```
-modem.on('open', data => {
-    modem.setModemMode(callback, 'PDU')
 })
 ```
 
@@ -85,17 +74,15 @@ modem.sendSMS('0999XXXXX19', 'Hello there Zab!', true, callback)
 ```
 
 #### Get Sim Inbox
-Returns an array of messageObject from sim inbox
+Shows messages of sim inbox
 ```
 modem.getSimInbox(callback)
 ```
 
 #### Delete Sim Message
-Delete a sim message by messageObject
-* Refer to returned data of `getSimInbox()`
-* If `enableConcatenation == true`, will delete others parts of message, else, manually delete it per index part
+Delete a sim message by message index
 ```
-modem.deleteMessage(messageObj, callback)
+modem.deleteMessage(index, callback)
 ```
 
 #### Delete All Sim Messages
@@ -174,4 +161,3 @@ modem.port
 
 ## License
 SerialPort-GSM is [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
-
