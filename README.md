@@ -63,6 +63,15 @@ modem.on('open', data => {
 })
 ```
 
+#### Set Modem Mode	
+`setModemMode(callback, type)`	
+* type can be `'PDU'` or `'SMS'`	
+```	
+modem.on('open', data => {	
+    modem.setModemMode(callback, 'PDU')	
+})	
+```
+
 #### Send Message
 Sends sms.
 `sendSMS(recipient, message, alert, callback)`
