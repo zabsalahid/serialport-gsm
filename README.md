@@ -14,7 +14,7 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
 ***
 ## Installation Instructions
 
-```
+```terminal
 npm install serialport-gsm
 ```
 
@@ -55,9 +55,10 @@ let options = {
 
 modem.open('COM', options, callback[Optional])
 ```
+
 #### Initialize Modem
 This function starts the modem. (If your port fails to work or does not respond to commands, don't forget to call `initializeModem` after opening the port.)
-```
+```js
 modem.on('open', data => {
     modem.initializeModem(callback[optional])
 })
@@ -66,7 +67,7 @@ modem.on('open', data => {
 #### Set Modem Mode	
 `setModemMode(callback, type)`	
 * type can be `'PDU'` or `'SMS'`	
-```	
+```	js
 modem.on('open', data => {	
     modem.setModemMode(callback, 'PDU')	
 })	
@@ -78,93 +79,93 @@ Sends sms.
 * alert parameter is boolean
 `true` - send as class 0 message(flash message)
 `false` - send as a normal sms
-```
+```js
 modem.sendSMS('0999XXXXX19', 'Hello there Zab!', true, callback)
 ```
 
 #### Get Sim Inbox
 Shows messages of sim inbox
-```
+```js
 modem.getSimInbox(callback)
 ```
 
 #### Delete Sim Message
-Delete a sim message by message index
-```
-modem.deleteMessage(index, callback)
+Delete a sim message by message object `(Use Sim Inbox data)`
+```js
+modem.deleteMessage(messageObj, callback)
 ```
 
 #### Delete All Sim Messages
-```
+```js
 modem.deleteAllSimMessages(callback)
 ```
 
 #### Get Modem Serial
-```
+```js
 modem.getModemSerial(callback)
 ```
 
 #### Get Network Signal
-```
+```js
 modem.getNetworkSignal(callback)
 ```
 
 #### Get Network Signal
-```
+```js
 modem.getNetworkSignal(callback)
 ```
 
 #### Get Own Number
-```
+```js
 modem.getOwnNumber(callback)
 ```
 
 #### Set Own Number
 `setOwnNumber('number', callback, name[optional || default 'OwnNumber'])`
-```
+```js
 modem.getOwnNumber(number, callback)
 ```
 
 #### Execute AT Command
-```
+```js
 modem.executeCommand(callback, priority, timeout)
 ```
 
 ## Other Usage 
 ### Event Listeners
 #### open
-```
+```js
 modem.on('open', result => { //do something })
 ```
 
 #### close
-```
+```js
 modem.on('close', result => { //do something })
 ```
 
 #### error
-```
+```js
 modem.on('error', result => { //do something })
 ```
 
 #### onSendingMessage
-```
+```js
 modem.on('onSendingMessage', result => { status, request, data })
 ```
 
 #### onNewMessageIndicator
-```
+```js
 modem.on('onNewMessageIndicator', result => { sender, timeSent })
 ```
 
 #### onNewMessage
-```
+```js
 modem.on('onNewMessage', messageDetails)
 ```
 
 ## SerialPort
 Access base serialport. Please refer to [***SerialPort Docs***](https://serialport.io/docs/en/api-serialport) for documentation
-```
+```js
 modem.port
 ```
 
