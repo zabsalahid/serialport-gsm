@@ -110,11 +110,6 @@ modem.getModemSerial(callback)
 modem.getNetworkSignal(callback)
 ```
 
-#### Get Network Signal
-```js
-modem.getNetworkSignal(callback)
-```
-
 #### Get Own Number
 ```js
 modem.getOwnNumber(callback)
@@ -123,7 +118,7 @@ modem.getOwnNumber(callback)
 #### Set Own Number
 `setOwnNumber('number', callback, name[optional || default 'OwnNumber'])`
 ```js
-modem.getOwnNumber(number, callback)
+modem.setOwnNumber(number, callback)
 ```
 
 #### Execute AT Command
@@ -135,17 +130,17 @@ modem.executeCommand(callback, priority, timeout)
 ### Event Listeners
 #### open
 ```js
-modem.on('open', result => { //do something })
+modem.on('open', result => { /*do something*/ })
 ```
 
 #### close
 ```js
-modem.on('close', result => { //do something })
+modem.on('close', result => { /*do something*/ })
 ```
 
 #### error
 ```js
-modem.on('error', result => { //do something })
+modem.on('error', result => { /*do something*/ })
 ```
 
 #### onSendingMessage
