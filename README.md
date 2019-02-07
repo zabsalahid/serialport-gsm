@@ -50,7 +50,9 @@ let options = {
     rtscts: false,
     xoff: false,
     xany: false,
-    buffersize: 0
+    buffersize: 0,
+    autoDeleteOnReceive: true,
+    enableConcatenation: true
 }
 
 modem.open('COM', options, callback[Optional])
