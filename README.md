@@ -28,8 +28,8 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
         * [close](#close)
         * [error](#error)
         * [onSendingMessage](#onsendingmessage)
-        * [onNewMessageIndicator](#onnewmessageindicator)
         * [onNewMessage](#onnewmessage)
+        * [onNewMessageIndicator](#onnewmessage-indicator)
         * [onNewIncomingCall](#onnewincomingcall)
         * [onMemoryFull](#onmemoryfull)
     * [SerialPort](#serialport)
@@ -63,7 +63,7 @@ When opening a serial port, specify (in this order)
 2. Options - optional `(see sample options on code)`.
     * `autoDeleteOnReceive` - Set to `true` to delete from sim after receiving | Default is `false`
     * `enableConcatenation` - Set to `true` to receive concatenated messages as one | Default is `false`
-    * `incomingCallIndication` - Set to `true` to fire to fire `onNewIncomingCall` events when receiving calls
+    * `incomingCallIndication` - Set to `true` to fire the `onNewIncomingCall` event when receiving calls | Default is `false`
 ```js
 let serialportgsm = require('serialport-gsm')
 let modem = serialportgsm.Modem()
@@ -103,7 +103,8 @@ modem.close()
 
 #### Set Modem Mode	
 `setModemMode(callback, type)`	
-* type can be `'PDU'` or `'SMS'`	
+* type can be `'PDU'` or `'SMS'`
+* Note: This module is focused on PDU mode as it is more supported in most GSMs.
 ```	js
 modem.on('open', data => {	
     modem.setModemMode(callback, 'PDU')	
@@ -113,7 +114,7 @@ modem.on('open', data => {
 #### Send Message
 Sends sms.
 `sendSMS(recipient, message, alert, callback)`
- * `recipient` - the recipient number should start the location code or `+` then location code `(Ex. '63999XXXXX19', '+63999XXXXX19' )`
+ * `recipient` - the recipient number should start with the location code or `+` then the location code `(Ex. '63999XXXXX19', '+63999XXXXX19' )`
  * `message` - the text message to send
  * `alert` - parameter is boolean
     * `true` - send as class 0 message(flash message)
@@ -188,14 +189,14 @@ modem.on('error', result => { /*do something*/ })
 modem.on('onSendingMessage', result => { status, request, data })
 ```
 
-#### onNewMessageIndicator
-```js
-modem.on('onNewMessageIndicator', result => { sender, timeSent })
-```
-
 #### onNewMessage
 ```js
 modem.on('onNewMessage', messageDetails)
+```
+
+#### onNewMessage Indicator
+```js
+modem.on('onNewMessageIndicator', result => { sender, timeSent })
 ```
 
 #### onNewIncomingCall
