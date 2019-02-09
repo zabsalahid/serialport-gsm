@@ -9,6 +9,28 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
 
 * [Installation](#installation-instructions)
 * [Usage](#usage)
+    * [Methods](#methods)
+        * [Open](#opening-a-port)
+        * [Initalize Modem](#initialize-modem)
+        * [Close](#close-modem)
+        * [Set Modem Mode](#set-modem-mode)
+        * [Send SMS](#send-message)
+        * [Get Sim Inbox](#get-sim-inbox)
+        * [Delete Message](#delete-sim-message)
+        * [Delete All SIm MEssages](#delete-all-sim-messages)
+        * [Get Modem Serial](#get-modem-serial)
+        * [Get Network Signal](#get-network-signal)
+        * [Get Own Number](#get-own-number)
+        * [Set Own Number](#set-own-number)
+        * [Execute AT Command](#execute-at-command)
+    * [Events](#events)
+        * [open](#open)
+        * [close](#close)
+        * [error](#error)
+        * [onSendingMessage](#onSendingMessage)
+        * [onNewMessageIndicator](#onNewMessageIndicator)
+        * [onNewMessage](#onNewMessage)
+    * [SerialPort](#SerialPort)
 * [License](#license)
 
 ***
@@ -19,6 +41,8 @@ npm install serialport-gsm
 ```
 
 ## Usage
+
+### Methods
 
 #### List Available Ports
 ```js
@@ -37,6 +61,7 @@ When opening a serial port, specify (in this order)
 2. Options - optional `(see sample options on code)`.
     * `autoDeleteOnReceive` - Set to `true` to delete from sim after receiving | Default is `false`
     * `enableConcatenation` - Set to `true` to receive concatenated messages as one | Default is `false`
+    * `incomingCallIndication` - Set to `true` to fire to fire `onNewIncomingCall` events when receiving calls
 ```js
 let serialportgsm = require('serialport-gsm')
 let modem = serialportgsm.Modem()
@@ -52,7 +77,8 @@ let options = {
     xany: false,
     buffersize: 0,
     autoDeleteOnReceive: true,
-    enableConcatenation: true
+    enableConcatenation: true,
+    incomingCallIndication: true
 }
 
 modem.open('COM', options, callback[Optional])
@@ -64,6 +90,13 @@ This function starts the modem. (If your port fails to work or does not respond 
 modem.on('open', data => {
     modem.initializeModem(callback[optional])
 })
+```
+
+#### Close Modem
+Closes an open connection
+`close(callback[optional])`
+```	js
+modem.close()
 ```
 
 #### Set Modem Mode	
@@ -129,7 +162,7 @@ modem.executeCommand(callback, priority, timeout)
 ```
 
 ## Other Usage 
-### Event Listeners
+### Events
 #### open
 ```js
 modem.on('open', result => { /*do something*/ })
@@ -160,10 +193,20 @@ modem.on('onNewMessageIndicator', result => { sender, timeSent })
 modem.on('onNewMessage', messageDetails)
 ```
 
+#### onNewIncomingCall
+```js
+modem.on('onNewIncomingCall', result => { number, numberScheme })
+```
+
+#### onMemoryFull
+```js
+modem.on('onMemoryFull', result => { status, data })
+```
+
 ## SerialPort
 Access base serialport. Please refer to [***SerialPort Docs***](https://serialport.io/docs/en/api-serialport) for documentation
 ```js
-modem.port
+modem.port.SERIAL_PORT_PROTOTYPES
 ```
 
 ## License
