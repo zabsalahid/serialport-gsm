@@ -1,6 +1,6 @@
 {
   "name": "serialport-gsm",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Serialport implementation for GSM commands (send text/flash messages, read, etc.)",
   "main": "lib/",
   "directories": {
