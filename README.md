@@ -77,7 +77,6 @@ let options = {
     rtscts: false,
     xoff: false,
     xany: false,
-    buffersize: 0,
     autoDeleteOnReceive: true,
     enableConcatenation: true,
     incomingCallIndication: true
