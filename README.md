@@ -113,11 +113,14 @@ modem.on('open', data => {
 #### Send Message
 Sends sms.
 `sendSMS(recipient, message, alert, callback)`
-* alert parameter is boolean
-`true` - send as class 0 message(flash message)
-`false` - send as a normal sms
+ * `recipient` - the recipient number should start the location code or `+` then location code `(Ex. '63999XXXXX19', '+63999XXXXX19' )`
+ * `message` - the text message to send
+ * `alert` - parameter is boolean
+    * `true` - send as class 0 message(flash message)
+    * `false` - send as a normal sms
+ * callback
 ```js
-modem.sendSMS('0999XXXXX19', 'Hello there Zab!', true, callback)
+modem.sendSMS('63999XXXXX19', 'Hello there Zab!', true, callback)
 ```
 
 #### Get Sim Inbox
