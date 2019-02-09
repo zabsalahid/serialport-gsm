@@ -27,12 +27,12 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
         * [open](#open)
         * [close](#close)
         * [error](#error)
-        * [onSendingMessage](#onSendingMessage)
-        * [onNewMessageIndicator](#onNewMessageIndicator)
-        * [onNewMessage](#onNewMessage)
-        * [onNewIncomingCall](#onNewIncomingCall)
-        * [onMemoryFull](#onMemoryFull)
-    * [SerialPort](#SerialPort)
+        * [onSendingMessage](#onsendingmessage)
+        * [onNewMessageIndicator](#onnewmessageindicator)
+        * [onNewMessage](#onnewmessage)
+        * [onNewIncomingCall](#onnewincomingcall)
+        * [onMemoryFull](#onmemoryfull)
+    * [SerialPort](#serialport)
 * [License](#license)
 
 ***
