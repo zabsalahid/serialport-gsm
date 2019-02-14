@@ -10,6 +10,7 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
 * [Installation](#installation-instructions)
 * [Usage](#usage)
     * [Methods](#methods)
+        * [List Ports](#list-available-ports)
         * [Open](#opening-a-port)
         * [Initalize Modem](#initialize-modem)
         * [Close](#close-modem)
@@ -210,6 +211,12 @@ modem.on('onMemoryFull', result => { status, data })
 
 ## SerialPort
 Access base serialport. Please refer to [***SerialPort Docs***](https://serialport.io/docs/en/api-serialport) for documentation
+```js
+let serialportgsm = require('serialport-gsm')
+let serialport = serialportgsm.serialport
+```
+
+Access modem serialport.
 ```js
 modem.port.SERIAL_PORT_PROTOTYPES
 ```
