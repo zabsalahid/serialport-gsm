@@ -164,7 +164,7 @@ modem.setOwnNumber(number, callback)
 
 #### Execute AT Command
 ```js
-modem.executeCommand(callback, priority, timeout)
+modem.executeCommand(command, callback, priority, timeout)
 ```
 
 ## Other Usage 
