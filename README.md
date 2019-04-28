@@ -119,6 +119,13 @@ modem.on('open', data => {
 })	
 ```
 
+#### Check Modem Communication
+Send simple command to check communication with device
+```js
+modem.checkModem(callback)
+```
+
+
 #### Send Message
 Sends sms.
 `sendSMS(recipient, message, alert, callback)`
