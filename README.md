@@ -65,6 +65,10 @@ When opening a serial port, specify (in this order)
     * `autoDeleteOnReceive` - Set to `true` to delete from sim after receiving | Default is `false`
     * `enableConcatenation` - Set to `true` to receive concatenated messages as one | Default is `false`
     * `incomingCallIndication` - Set to `true` to fire the `onNewIncomingCall` event when receiving calls | Default is `false`
+    * `incomingSMSIndication` - Set to `false` to not fire the `onNewIncomingCall` event when receiving calls | Default is `true`
+    * `pin` - If your SIM card is protected by a IN provide the PIN as String and it will be used to unlock the SIM card during initialization | Default is `` (empty, means "no PIN existing on the SIM card")
+    * `customInitCommand` - If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return "OK" | Default is `` (empty, means "no custom command for init")
+    * `logger` - provide a logger instance, currently "debug" is used only to output written and received serial data. Use "console" for debugging purposes | Default is no logging
 ```js
 let serialportgsm = require('serialport-gsm')
 let modem = serialportgsm.Modem()
@@ -80,7 +84,11 @@ let options = {
     xany: false,
     autoDeleteOnReceive: true,
     enableConcatenation: true,
-    incomingCallIndication: true
+    incomingCallIndication: true,
+    incomingSMSIndication: true,
+    pin: '',
+    customInitCommand: '',
+    logger: console
 }
 
 modem.open('COM', options, callback[Optional])
@@ -111,6 +119,13 @@ modem.on('open', data => {
 })	
 ```
 
+#### Check Modem Communication
+Send simple command to check communication with device
+```js
+modem.checkModem(callback)
+```
+
+
 #### Send Message
 Sends sms.
 `sendSMS(recipient, message, alert, callback)`
@@ -119,7 +134,7 @@ Sends sms.
  * `alert` - parameter is boolean
     * `true` - send as class 0 message(flash message)
     * `false` - send as a normal sms
- * callback
+ * `callback` - the callback is called twice! First time when queued for sending and second time when message was really send out!
 ```js
 modem.sendSMS('63999XXXXX19', 'Hello there Zab!', true, callback)
 ```
