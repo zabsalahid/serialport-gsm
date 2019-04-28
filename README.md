@@ -134,7 +134,7 @@ Sends sms.
  * `alert` - parameter is boolean
     * `true` - send as class 0 message(flash message)
     * `false` - send as a normal sms
- * callback
+ * `callback` - the callback is called twice! First time when queued for sending and second time when message was really send out!
 ```js
 modem.sendSMS('63999XXXXX19', 'Hello there Zab!', true, callback)
 ```
