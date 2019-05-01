@@ -42,6 +42,10 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
 ```terminal
 npm install serialport-gsm
 ```
+ 
+## Example
+
+A full example can be found in the example directory.
 
 ## Usage
 
@@ -223,6 +227,9 @@ modem.on('onNewIncomingCall', result => { number, numberScheme })
 ```js
 modem.on('onMemoryFull', result => { status, data })
 ```
+
+## Errors
+When errors are returned and the error was originated on the device thenin the error text an error code should be listed, e.g. "+CMS ERROR: 500". An (incomplete) list of possisble errorcodes and their meanings can be found e.g. at https://www.activexperts.com/sms-component/gsm-error-codes/
 
 ## SerialPort
 Access base serialport. Please refer to [***SerialPort Docs***](https://serialport.io/docs/en/api-serialport) for documentation
