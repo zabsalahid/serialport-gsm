@@ -6,7 +6,6 @@ let options = {
   dataBits: 8,
   parity: 'none',
   stopBits: 1,
-  flowControl: false,
   xon: false,
   rtscts: false,
   xoff: false,
