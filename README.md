@@ -2,7 +2,7 @@
 [![NPM](https://nodei.co/npm/serialport-gsm.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/serialport-gsm/)
 
 ## Intro
-SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primarily for sms) (Focused in `PDU` mode)
+SerialPort-GSM is a simplified plugin for communicating with gsm modems, primarily for sms. (This library is focused in `'PDU'` mode)
 
 ***
 ## Table of Contents
@@ -12,7 +12,7 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
     * [Methods](#methods)
         * [List Ports](#list-available-ports)
         * [Open](#opening-a-port)
-        * [Initalize Modem](#initialize-modem)
+        * [Initialize Modem](#initialize-modem)
         * [Close](#close-modem)
         * [Set Modem Mode](#set-modem-mode)
         * [Send SMS](#send-message)
@@ -23,6 +23,7 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems. (Primar
         * [Get Network Signal](#get-network-signal)
         * [Get Own Number](#get-own-number)
         * [Set Own Number](#set-own-number)
+        * [Hangup current call](#hangup-call)
         * [Execute AT Command](#execute-at-command)
     * [Events](#events)
         * [open](#open)
@@ -65,25 +66,42 @@ Call other functions after the port has been opened.
 `open(path, options, callback)`
 When opening a serial port, specify (in this order)
 1. Path to Serial Port - required.
-2. Options - optional `(see sample options on code)`.
-    * `autoDeleteOnReceive` - Set to `true` to delete from sim after receiving | Default is `false`
-    * `enableConcatenation` - Set to `true` to receive concatenated messages as one | Default is `false`
-    * `incomingCallIndication` - Set to `true` to fire the `onNewIncomingCall` event when receiving calls | Default is `false`
-    * `incomingSMSIndication` - Set to `false` to not fire the `onNewIncomingCall` event when receiving calls | Default is `true`
-    * `pin` - If your SIM card is protected by a IN provide the PIN as String and it will be used to unlock the SIM card during initialization | Default is `` (empty, means "no PIN existing on the SIM card")
-    * `customInitCommand` - If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return "OK" | Default is `` (empty, means "no custom command for init")
-    * `logger` - provide a logger instance, currently "debug" is used only to output written and received serial data. Use "console" for debugging purposes | Default is no logging
+2. Options `(see sample options on code)`.
+
+    **SerialPort openOptions**
+    | Name                  | Type          | Default     | Description |
+    | --------------------- | ------------- | ----------- | ----------- |
+    | baudRate | number | 9600 | The port's baudRate. |
+    | dataBits | number | 8 | Must be one of: 8, 7, 6, or 5. |
+    | stopBits | number | 1 | Must be one of: 1 or 2. |
+    | highWaterMark | number | 16384 | The size of the read and write buffers defaults to 16k. |
+    | parity | string | "none | Must be one of: 'none', 'even', 'mark', 'odd', 'space'. |
+    | rtscts | boolean | false | flow control setting |
+    | xon | boolean | false | flow control setting |
+    | xoff | boolean | false | flow control setting |
+    | xany | boolean | false | flow control settings |
+
+    **SerialPort-GSM additional openOptions**
+    | Name                  | Type          | Default     | Description |
+    | --------------------- | ------------- | ----------- | ----------- |
+    | autoDeleteOnReceive | boolean | false | Delete from `'sim'` after receiving. |
+    | enableConcatenation | boolean | false | Receive concatenated messages as one. |
+    | incomingCallIndication | boolean | false | Receive `'onNewIncomingCall'` event when receiving calls. |
+    | incomingSMSIndication | boolean | true | Enables the modem to notify that a new SMS message has been received. |
+    | pin | string |  | If your SIM card is protected by a PIN provide the PIN as String and it will be used to unlock the SIM card during initialization (empty, means "no PIN existing on the SIM card"). |
+    | customInitCommand | string |  | If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return `'OK'` (empty, means "no custom command for init"). |
+    | logger |  |  | Provide a logger instance, currently `'debug'` is used only to output written and received serial data. Use `'console'` for debugging purposes. |
+
 ```js
 let serialportgsm = require('serialport-gsm')
 let modem = serialportgsm.Modem()
 let options = {
     baudRate: 115200,
     dataBits: 8,
-    parity: 'none',
     stopBits: 1,
-    flowControl: false,
-    xon: false,
+    parity: 'none',
     rtscts: false,
+    xon: false,
     xoff: false,
     xany: false,
     autoDeleteOnReceive: true,
@@ -131,14 +149,15 @@ modem.checkModem(callback)
 
 
 #### Send Message
-Sends sms.
-`sendSMS(recipient, message, alert, callback)`
- * `recipient` - the recipient number should start with the location code or `+` then the location code `(Ex. '63999XXXXX19', '+63999XXXXX19' )`
- * `message` - the text message to send
- * `alert` - parameter is boolean
-    * `true` - send as class 0 message(flash message)
-    * `false` - send as a normal sms
- * `callback` - the callback is called twice! First time when queued for sending and second time when message was really send out!
+Sends sms. `sendSMS(recipient, message, alert, callback)`
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| recipient | string |  | The recipient number should start with the location code or `'+'` then the location code `(Ex. '63999XXXXX19', '+63999XXXXX19' )`. |
+| message | string |  | The text message to send. |
+| alert | boolean | false | Enable to send as class 0 message (flash message), or Disable to send as a normal sms. |
+| callback | [function] |  | The callback is called twice. First time when queued for sending and second time when message was really send out. |
+
 ```js
 modem.sendSMS('63999XXXXX19', 'Hello there Zab!', true, callback)
 ```
@@ -179,6 +198,11 @@ modem.getOwnNumber(callback)
 `setOwnNumber('number', callback, name[optional || default 'OwnNumber'])`
 ```js
 modem.setOwnNumber(number, callback)
+```
+
+#### Hangup Call
+```js
+modem.hangupCall(callback)
 ```
 
 #### Execute AT Command
