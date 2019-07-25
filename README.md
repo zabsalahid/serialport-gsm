@@ -35,6 +35,7 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems, primari
         * [onNewIncomingCall](#onnewincomingcall)
         * [onMemoryFull](#onmemoryfull)
     * [SerialPort](#serialport)
+* [Contributors](#contributors)
 * [License](#license)
 
 ***
@@ -253,7 +254,7 @@ modem.on('onMemoryFull', result => { status, data })
 ```
 
 ## Errors
-When errors are returned and the error was originated on the device thenin the error text an error code should be listed, e.g. "+CMS ERROR: 500". An (incomplete) list of possisble errorcodes and their meanings can be found e.g. at https://www.activexperts.com/sms-component/gsm-error-codes/
+When errors are returned and the error originated from the device, then in the error message, an error code should be listed, e.g. "+CMS ERROR: 500". An (incomplete) list of possible error codes and their meanings can be found e.g. at https://www.activexperts.com/sms-component/gsm-error-codes/
 
 ## SerialPort
 Access base serialport. Please refer to [***SerialPort Docs***](https://serialport.io/docs/en/api-serialport) for documentation
@@ -266,6 +267,15 @@ Access modem serialport.
 ```js
 modem.port.SERIAL_PORT_PROTOTYPES
 ```
+
+## Contributors
+Thanks goes to these wonderful people who contributed a lot in this project:
+ 
+<a href="https://github.com/zabsalahid/serialport-gsm/graphs/contributors">
+  <img src="https://contributors-img.firebaseapp.com/image?repo=zabsalahid/serialport-gsm" />
+</a>
+
+Made with [contributors-img](https://contributors-img.firebaseapp.com).
 
 ## License
 SerialPort-GSM is [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
