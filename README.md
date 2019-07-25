@@ -71,26 +71,26 @@ When opening a serial port, specify (in this order)
     **SerialPort openOptions**
     | Name                  | Type          | Default     | Description |
     | --------------------- | ------------- | ----------- | ----------- |
-    | baudRate | number | 9600 | The port's baudRate. |
-    | dataBits | number | 8 | Must be one of: 8, 7, 6, or 5. |
-    | stopBits | number | 1 | Must be one of: 1 or 2. |
-    | highWaterMark | number | 16384 | The size of the read and write buffers defaults to 16k. |
-    | parity | string | "none | Must be one of: 'none', 'even', 'mark', 'odd', 'space'. |
-    | rtscts | boolean | false | flow control setting |
-    | xon | boolean | false | flow control setting |
-    | xoff | boolean | false | flow control setting |
-    | xany | boolean | false | flow control settings |
+    | baudRate              | number        | 9600        | The port's baudRate. |
+    | dataBits              | number        | 8           | Must be one of: 8, 7, 6, or 5. |
+    | stopBits              | number        | 1           | Must be one of: 1 or 2. |
+    | highWaterMark         | number        | 16384       | The size of the read and write buffers defaults to 16k. |
+    | parity                | string        | "none       | Must be one of: 'none', 'even', 'mark', 'odd', 'space'. |
+    | rtscts                | boolean       | false       | flow control setting |
+    | xon                   | boolean       | false       | flow control setting |
+    | xoff                  | boolean       | false       | flow control setting |
+    | xany                  | boolean       | false       | flow control settings |
 
     **SerialPort-GSM additional openOptions**
-    | Name                  | Type          | Default     | Description |
-    | --------------------- | ------------- | ----------- | ----------- |
-    | autoDeleteOnReceive | boolean | false | Delete from `'sim'` after receiving. |
-    | enableConcatenation | boolean | false | Receive concatenated messages as one. |
-    | incomingCallIndication | boolean | false | Receive `'onNewIncomingCall'` event when receiving calls. |
-    | incomingSMSIndication | boolean | true | Enables the modem to notify that a new SMS message has been received. |
-    | pin | string |  | If your SIM card is protected by a PIN provide the PIN as String and it will be used to unlock the SIM card during initialization (empty, means "no PIN existing on the SIM card"). |
-    | customInitCommand | string |  | If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return `'OK'` (empty, means "no custom command for init"). |
-    | logger |  |  | Provide a logger instance, currently `'debug'` is used only to output written and received serial data. Use `'console'` for debugging purposes. |
+    | Name                   | Type          | Default     | Description |
+    | ---------------------- | ------------- | ----------- | ----------- |
+    | autoDeleteOnReceive    | boolean       | false       | Delete from `'sim'` after receiving. |
+    | enableConcatenation    | boolean       | false       | Receive concatenated messages as one. |
+    | incomingCallIndication | boolean       | false       | Receive `'onNewIncomingCall'` event when receiving calls. |
+    | incomingSMSIndication  | boolean       | true        | Enables the modem to notify that a new SMS message has been received. |
+    | pin                    | string        |             | If your SIM card is protected by a PIN provide the PIN as String and it will be used to unlock the SIM card during initialization (empty, means "no PIN existing on the SIM card"). |
+    | customInitCommand      | string        |             | If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return `'OK'` (empty, means "no custom command for init"). |
+    | logger                 |               |             | Provide a logger instance, currently `'debug'` is used only to output written and received serial data. Use `'console'` for debugging purposes. |
 
 ```js
 let serialportgsm = require('serialport-gsm')
@@ -151,12 +151,12 @@ modem.checkModem(callback)
 #### Send Message
 Sends sms. `sendSMS(recipient, message, alert, callback)`
 
-| Name | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| recipient | string |  | The recipient number should start with the location code or `'+'` then the location code `(Ex. '63999XXXXX19', '+63999XXXXX19' )`. |
-| message | string |  | The text message to send. |
-| alert | boolean | false | Enable to send as class 0 message (flash message), or Disable to send as a normal sms. |
-| callback | [function] |  | The callback is called twice. First time when queued for sending and second time when message was really send out. |
+| Name      | Type       | Default | Description |
+| --------- | ---------- | ------- | ----------- |
+| recipient | string     |         | The recipient number should start with the location code or `'+'` then the location code `(Ex. '63999XXXXX19', '+63999XXXXX19' )`. |
+| message   | string     |         | The text message to send. |
+| alert     | boolean    | false   | Enable to send as class 0 message (flash message), or Disable to send as a normal sms. |
+| callback  | [function] |         | The callback is called twice. First time when queued for sending and second time when message was really send out. |
 
 ```js
 modem.sendSMS('63999XXXXX19', 'Hello there Zab!', true, callback)
