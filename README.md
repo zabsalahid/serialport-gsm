@@ -69,29 +69,29 @@ When opening a serial port, specify (in this order)
 1. Path to Serial Port - required.
 2. Options `(see sample options on code)`.
 
-    **SerialPort openOptions**
-    | Name                  | Type          | Default     | Description |
-    | --------------------- | ------------- | ----------- | ----------- |
-    | baudRate              | number        | 9600        | The port's baudRate. |
-    | dataBits              | number        | 8           | Must be one of: 8, 7, 6, or 5. |
-    | stopBits              | number        | 1           | Must be one of: 1 or 2. |
-    | highWaterMark         | number        | 16384       | The size of the read and write buffers defaults to 16k. |
-    | parity                | string        | "none       | Must be one of: 'none', 'even', 'mark', 'odd', 'space'. |
-    | rtscts                | boolean       | false       | flow control setting |
-    | xon                   | boolean       | false       | flow control setting |
-    | xoff                  | boolean       | false       | flow control setting |
-    | xany                  | boolean       | false       | flow control settings |
+**SerialPort openOptions**
+| Name                  | Type          | Default     | Description |
+| --------------------- | ------------- | ----------- | ----------- |
+| baudRate              | number        | 9600        | The port's baudRate. |
+| dataBits              | number        | 8           | Must be one of: 8, 7, 6, or 5. |
+| stopBits              | number        | 1           | Must be one of: 1 or 2. |
+| highWaterMark         | number        | 16384       | The size of the read and write buffers defaults to 16k. |
+| parity                | string        | "none       | Must be one of: 'none', 'even', 'mark', 'odd', 'space'. |
+| rtscts                | boolean       | false       | flow control setting |
+| xon                   | boolean       | false       | flow control setting |
+| xoff                  | boolean       | false       | flow control setting |
+| xany                  | boolean       | false       | flow control settings |
 
-    **SerialPort-GSM additional openOptions**
-    | Name                   | Type          | Default     | Description |
-    | ---------------------- | ------------- | ----------- | ----------- |
-    | autoDeleteOnReceive    | boolean       | false       | Delete from `'sim'` after receiving. |
-    | enableConcatenation    | boolean       | false       | Receive concatenated messages as one. |
-    | incomingCallIndication | boolean       | false       | Receive `'onNewIncomingCall'` event when receiving calls. |
-    | incomingSMSIndication  | boolean       | true        | Enables the modem to notify that a new SMS message has been received. |
-    | pin                    | string        |             | If your SIM card is protected by a PIN provide the PIN as String and it will be used to unlock the SIM card during initialization (empty, means "no PIN existing on the SIM card"). |
-    | customInitCommand      | string        |             | If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return `'OK'` (empty, means "no custom command for init"). |
-    | logger                 |               |             | Provide a logger instance, currently `'debug'` is used only to output written and received serial data. Use `'console'` for debugging purposes. |
+**SerialPort-GSM additional openOptions**
+| Name                   | Type          | Default     | Description |
+| ---------------------- | ------------- | ----------- | ----------- |
+| autoDeleteOnReceive    | boolean       | false       | Delete from `'sim'` after receiving. |
+| enableConcatenation    | boolean       | false       | Receive concatenated messages as one. |
+| incomingCallIndication | boolean       | false       | Receive `'onNewIncomingCall'` event when receiving calls. |
+| incomingSMSIndication  | boolean       | true        | Enables the modem to notify that a new SMS message has been received. |
+| pin                    | string        |             | If your SIM card is protected by a PIN provide the PIN as String and it will be used to unlock the SIM card during initialization (empty, means "no PIN existing on the SIM card"). |
+| customInitCommand      | string        |             | If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return `'OK'` (empty, means "no custom command for init"). |
+| logger                 |               |             | Provide a logger instance, currently `'debug'` is used only to output written and received serial data. Use `'console'` for debugging purposes. |
 
 ```js
 let serialportgsm = require('serialport-gsm')
@@ -207,6 +207,7 @@ modem.hangupCall(callback)
 ```
 
 #### Execute AT Command
+For executing a complex custom command with multi-line responses, you need your own parsing logic - see examples
 ```js
 modem.executeCommand(command, callback, priority, timeout)
 ```

@@ -47,11 +47,11 @@ gsmModem.on('open', () => {
           console.log(`Set Mode: ${JSON.stringify(msg)}`);
 
           // get the Network signal strength
-          gsmModem.getNetworkSignal((msg, err) => {
+          gsmModem.getNetworkSignal((result, err) => {
             if (err) {
               console.log(`Error retrieving Signal Strength - ${err}`);
             } else {
-              console.log(`Signal Strength: ${JSON.stringify(msg)}`);
+              console.log(`Signal Strength: ${JSON.stringify(result)}`);
             }
           });
 
