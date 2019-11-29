@@ -69,7 +69,7 @@ When opening a serial port, specify (in this order)
 1. Path to Serial Port - required.
 2. Options `(see sample options on code)`.
 
-**SerialPort openOptions**
+#### SerialPort openOptions
 | Name                  | Type          | Default     | Description |
 | --------------------- | ------------- | ----------- | ----------- |
 | baudRate              | number        | 9600        | The port's baudRate. |
@@ -82,7 +82,7 @@ When opening a serial port, specify (in this order)
 | xoff                  | boolean       | false       | flow control setting |
 | xany                  | boolean       | false       | flow control settings |
 
-**SerialPort-GSM additional openOptions**
+#### SerialPort-GSM additional openOptions
 | Name                   | Type          | Default     | Description |
 | ---------------------- | ------------- | ----------- | ----------- |
 | autoDeleteOnReceive    | boolean       | false       | Delete from `'sim'` after receiving. |
