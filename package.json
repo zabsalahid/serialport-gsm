@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "node-pdu": "^1.0.15",
+    "node-sms-pdu": "^0.2.0",
     "serialport": "^8.0.8"
   },
   "devDependencies": {
