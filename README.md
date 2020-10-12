@@ -32,6 +32,7 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems, primari
         * [onSendingMessage](#onsendingmessage)
         * [onNewMessage](#onnewmessage)
         * [onNewMessageIndicator](#onnewmessage-indicator)
+        * [onMessageDelivered](#onmessagedelivered)
         * [onNewIncomingCall](#onnewincomingcall)
         * [onMemoryFull](#onmemoryfull)
     * [SerialPort](#serialport)
@@ -89,6 +90,7 @@ When opening a serial port, specify (in this order)
 | enableConcatenation    | boolean       | false       | Receive concatenated messages as one. |
 | incomingCallIndication | boolean       | false       | Receive `'onNewIncomingCall'` event when receiving calls. |
 | incomingSMSIndication  | boolean       | true        | Enables the modem to notify that a new SMS message has been received. |
+| deliveryReport  | boolean       | false        | Enables SMS delivery report. |
 | pin                    | string        |             | If your SIM card is protected by a PIN provide the PIN as String and it will be used to unlock the SIM card during initialization (empty, means "no PIN existing on the SIM card"). |
 | customInitCommand      | string        |             | If your device needs a custom initialization command it can be provided and will be used after PIN check. The command is expected to return `'OK'` (empty, means "no custom command for init"). |
 | logger                 |               |             | Provide a logger instance, currently `'debug'` is used only to output written and received serial data. Use `'console'` for debugging purposes. |
@@ -109,6 +111,7 @@ let options = {
     enableConcatenation: true,
     incomingCallIndication: true,
     incomingSMSIndication: true,
+    deliveryReport: true,
     pin: '',
     customInitCommand: '',
     logger: console
@@ -247,6 +250,11 @@ modem.on('onNewMessageIndicator', result => { sender, timeSent })
 #### onNewIncomingCall
 ```js
 modem.on('onNewIncomingCall', result => { number, numberScheme })
+```
+
+#### onMessageDelivered
+```js
+modem.on('onMessageDelivered', result => { sender, timeDelivered, index, reference })
 ```
 
 #### onMemoryFull
