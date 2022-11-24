@@ -8,10 +8,13 @@
   },
   "dependencies": {
     "node-pdu": "^1.0.15",
-    "serialport": "^8.0.8"
+    "serialport": "^10.5.0"
   },
   "devDependencies": {
-    "nodemon": "^1.18.9"
+    "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": ">=12.0.0"
   },
   "scripts": {
     "start": "nodemon test.js",
