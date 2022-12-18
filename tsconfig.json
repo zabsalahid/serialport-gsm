@@ -22,12 +22,12 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"forceConsistentCasingInFileNames": true,
-		"baseUrl": "lib",
+		"baseUrl": "src",
 		"importHelpers": true,
 		"removeComments": true,
 		"skipLibCheck": true,
 		"resolveJsonModule": true
 	},
 	"exclude": ["node_modules", "dist"],
-	"include": ["lib"]
+	"include": ["src"]
 }
