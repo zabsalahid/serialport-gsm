@@ -1,0 +1,40 @@
+import { CommandResponse } from '../types';
+import { Command } from './Command';
+
+export async function simplifyResponse(response: Promise<CommandResponse>) {
+	return (await response)[0] || '';
+}
+
+export function resultCode(response: string) {
+	if (response.toUpperCase().includes('ERROR') || response.toLocaleUpperCase().trim() !== 'OK') {
+		return 'ERROR';
+	}
+
+	return 'OK';
+}
+
+export function splitToChunks(str: string, chunkLenght: number) {
+	const result = [];
+
+	for (let i = 0; i < str.length; i += chunkLenght) {
+		result.push(str.slice(i, i + chunkLenght));
+	}
+
+	return result;
+}
+
+
+export interface ModemOptions {
+	autoDeleteOnReceive: boolean;
+	enableConcatenation: boolean;
+	customInitCommand: string | null;
+	autoInitOnOpen: boolean;
+	cnmiCommand: string;
+}
+
+export interface CmdStack {
+	cmds: Command[];
+	cancelOnFailure: boolean;
+	onFinish?: () => void;
+	onFailed?: (e: Error) => void;
+}
