@@ -88,7 +88,10 @@ export class CommandHandler {
 
 			const resetTimeout = () => {
 				clearTimeout(timeout);
-				timeout = setTimeout(() => resolve(new Error('Command is timeouted!')), cmd.timeout);
+				timeout = setTimeout(() => {
+					this.events.removeListener('onDataReceived', resetTimeout);
+					resolve(new Error('Command is timeouted!'));
+				}, cmd.timeout);
 			};
 
 			this.events.on('onDataReceived', () => resetTimeout());
