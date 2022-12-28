@@ -18,7 +18,6 @@ export interface ModemConstructorOptions {
 
 // public function types and event types
 
-export type ModemMode = 'PDU' | 'SMS';
 export type CommandResponse = string[];
 export type IncomingCall = { phoneNumber: string; scheme: string };
 export type IncomingUSSD = { text?: string; follow?: string; followCode?: number };
@@ -30,7 +29,7 @@ export interface SendSMSSuccess {
 		message: string;
 		recipient: string;
 		alert: boolean;
-		pdu?: Submit;
+		pdu: Submit;
 	};
 }
 
@@ -48,16 +47,6 @@ export interface PduSms {
 	timestamp?: string;
 	pdu: Deliver | Report | Submit;
 	concatenatedMessages?: number[];
-}
-
-export interface TxtSms {
-	index: number;
-	status: number;
-	sender?: string;
-	message: string;
-	timestamp?: string;
-	pdu?: undefined;
-	concatenatedMessages?: undefined;
 }
 
 // SerialPortOptions

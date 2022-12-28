@@ -48,4 +48,3 @@ export class Events extends EventEmitter {
 		this.setMaxListeners(0);
 	}
 }
-

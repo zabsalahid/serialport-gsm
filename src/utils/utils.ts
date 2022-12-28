@@ -13,16 +13,7 @@ export function resultCode(response: string) {
 	return 'OK';
 }
 
-export function splitToChunks(str: string, chunkLenght: number) {
-	const result = [];
-
-	for (let i = 0; i < str.length; i += chunkLenght) {
-		result.push(str.slice(i, i + chunkLenght));
-	}
-
-	return result;
-}
-
+export type ModemMode = 'PDU' | 'SMS';
 
 export interface ModemOptions {
 	autoDeleteOnReceive: boolean;

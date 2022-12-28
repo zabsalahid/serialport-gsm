@@ -23,7 +23,6 @@ export class CommandHandler {
 	// receiving data
 	private receivedData = '';
 	private receivedCmdResponse: CommandResponse = [];
-	private pushAndSkipNextLine = false;
 
 	constructor(modem: Modem, serialPort: SerialPort, events: Events) {
 		this.modem = modem;
@@ -124,18 +123,6 @@ export class CommandHandler {
 
 			if (part.trim() === '') {
 				continue;
-			}
-
-			if (this.pushAndSkipNextLine) {
-				this.receivedCmdResponse.push(part);
-				this.pushAndSkipNextLine = false;
-
-				continue;
-			}
-
-			// interception of AT commands, which can be written in plain text SMS messages
-			if (part.toUpperCase().startsWith('+CMGL:')) {
-				this.pushAndSkipNextLine = true;
 			}
 
 			// skip echoes from commands

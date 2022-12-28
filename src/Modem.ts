@@ -1,23 +1,13 @@
 import { SerialPort } from 'serialport';
 import * as pdu from './lib/node-pdu/index';
-import {
-	CommandResponse,
-	ModemConstructorOptions,
-	ModemMode,
-	PduSms,
-	SendSMSFailed,
-	SendSMSSuccess,
-	SerialPortOptions,
-	TxtSms
-} from './types';
+import { CommandResponse, ModemConstructorOptions, PduSms, SendSMSFailed, SendSMSSuccess, SerialPortOptions } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
 import { Events } from './utils/Events';
-import { CmdStack, ModemOptions, resultCode, simplifyResponse, splitToChunks } from './utils/utils';
+import { CmdStack, ModemMode, ModemOptions, resultCode, simplifyResponse } from './utils/utils';
 
 export class Modem {
 	// options
-	private _mode: ModemMode;
 	private readonly pinCode: string | null;
 	private readonly options: ModemOptions;
 
@@ -26,8 +16,7 @@ export class Modem {
 	private readonly events = new Events();
 	private readonly cmdHandler: CommandHandler;
 
-	constructor(targetDevice: string, mode: ModemMode = 'PDU', options: ModemConstructorOptions = {}) {
-		this._mode = mode;
+	constructor(targetDevice: string, options: ModemConstructorOptions = {}) {
 		this.pinCode = options.pin || null;
 
 		this.options = {
@@ -73,10 +62,6 @@ export class Modem {
 
 	get isOpen() {
 		return this.port.isOpen;
-	}
-
-	get mode() {
-		return this._mode;
 	}
 
 	get queueLength() {
@@ -134,6 +119,18 @@ export class Modem {
 
 		if (resultCode(response) !== 'OK') {
 			throw new Error(`serialport-gsm/${this.port.path}: Modem failed to reset!`);
+		}
+	}
+
+	private async setMode(mode: ModemMode, prio = false) {
+		const response = await simplifyResponse(this.executeATCommand(`AT+CMGF=${mode === 'PDU' ? 0 : 1}`, prio));
+
+		if (resultCode(response) !== 'OK') {
+			throw new Error(`serialport-gsm/${this.port.path}: The setting of the mode failed!`);
+		}
+
+		if (mode === 'PDU') {
+			await this.enableCNMI(prio);
 		}
 	}
 
@@ -220,7 +217,7 @@ export class Modem {
 			throw new Error(`serialport-gsm/${this.port.path}: Initialization of the modem failed`);
 		}
 
-		await this.setMode(this.mode);
+		await this.setMode('PDU', prio);
 		await this.enableClip(prio);
 
 		this.events.emit('onInitialized');
@@ -236,29 +233,11 @@ export class Modem {
 		return { status: 'OK' };
 	}
 
-	async setMode(mode: ModemMode, prio = false) {
-		const x = mode === 'PDU' ? 0 : 1;
-		const response = await simplifyResponse(this.executeATCommand(`AT+CMGF=${x}`, prio));
-
-		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: The setting of the mode failed!`);
-		}
-
-		if (mode === 'PDU') {
-			await this.enableCNMI(prio);
-		}
-
-		return (this._mode = mode);
-	}
-
 	async sendSMS(number: string, message: string, flashSMS = false, prio = false): Promise<SendSMSSuccess> {
-		message = message.replace(/\r|\\x1a/g, '');
 		const messageID = `${Date.now()}`;
 
-		const cmdSequence: CmdStack = {
-			cmds: [],
-			cancelOnFailure: true
-		};
+		const submit = new pdu.Submit(number, message);
+		submit.dataCodingScheme.setUseMessageClass(flashSMS);
 
 		const checkReponse = (response: CommandResponse | Error) => {
 			if (response instanceof Error || resultCode(response.pop() || '') !== 'OK') {
@@ -266,60 +245,32 @@ export class Modem {
 			}
 		};
 
-		const executeCmdStack = () =>
-			new Promise((resolve: (success: true) => void, reject: (error: Error) => void) => {
-				cmdSequence.onFinish = () => resolve(true);
-
-				cmdSequence.onFailed = (error) => {
-					const result: SendSMSFailed = {
-						success: false,
-						messageID,
-						error
-					};
-
-					this.events.emitMessageSendingFailed(result);
-					reject(error);
-				};
-
-				this.cmdHandler.pushToQueue(cmdSequence, prio);
-			});
-
-		if (this.mode === 'SMS') {
-			for (const part of splitToChunks(message, 160)) {
-				cmdSequence.cmds.push(
-					...[new Command(`AT+CMGS="${number}"`, 250, undefined, false), new Command(part + '\x1a', 10000, checkReponse)]
-				);
-			}
-
-			await executeCmdStack();
-
-			const result: SendSMSSuccess = {
-				success: true,
-				messageID,
-				data: {
-					message,
-					recipient: number,
-					alert: false
-				}
-			};
-
-			this.events.emitSMSsent(result);
-			return result;
-		}
-
-		const submit = new pdu.Submit(number, message);
-		submit.dataCodingScheme.setUseMessageClass(flashSMS);
-
-		for (const part of submit.getParts()) {
-			cmdSequence.cmds.push(
-				...[
+		const cmdSequence: CmdStack = {
+			cmds: submit
+				.getParts()
+				.flatMap((part) => [
 					new Command(`AT+CMGS=${part.toString(submit).length / 2 - 1}`, 250, undefined, false),
 					new Command(part.toString(submit) + '\x1a', 10000, checkReponse)
-				]
-			);
-		}
+				]),
+			cancelOnFailure: true
+		};
 
-		await executeCmdStack();
+		await new Promise((resolve: (success: true) => void, reject: (error: Error) => void) => {
+			cmdSequence.onFinish = () => resolve(true);
+
+			cmdSequence.onFailed = (error) => {
+				const result: SendSMSFailed = {
+					success: false,
+					messageID,
+					error
+				};
+
+				this.events.emit('onSMSsentFailed', result);
+				reject(error);
+			};
+
+			this.cmdHandler.pushToQueue(cmdSequence, prio);
+		});
 
 		const result: SendSMSSuccess = {
 			success: true,
@@ -461,17 +412,8 @@ export class Modem {
 		}
 	}
 
-	async deleteMessage(message: PduSms | TxtSms, prio = false) {
-		if (!message.pdu || message.concatenatedMessages === undefined || !this.options.enableConcatenation) {
-			try {
-				await this.deleteSMS(message.index);
-				return { deleted: [message.index], failed: [] };
-			} catch (e) {
-				return { deleted: [], failed: [message.index] };
-			}
-		}
-
-		const indexes = message.concatenatedMessages.sort((a, b) => b - a);
+	async deleteMessage(message: PduSms, prio = false) {
+		const indexes = message.concatenatedMessages?.sort((a, b) => b - a) || [message.index];
 		const deleted: number[] = [];
 		const failed: number[] = [];
 
@@ -488,17 +430,17 @@ export class Modem {
 	}
 
 	async getSimInbox(prio = false) {
-		const reponse = await this.executeATCommand(this.mode === 'PDU' ? 'AT+CMGL=4' : 'AT+CMGL="ALL"', prio);
+		const reponse = await this.executeATCommand('AT+CMGL=4', prio);
 
 		if (resultCode(reponse.pop() || '') !== 'OK' || reponse.length % 2 !== 0) {
 			throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS inbox failed!`);
 		}
 
 		let preInformation;
-		const result: (PduSms | TxtSms)[] = [];
+		const result: PduSms[] = [];
 
-		for (const [i, part] of reponse.entries()) {
-			if (i % 2 === 0 && part.toUpperCase().startsWith('+CMGL:')) {
+		for (const part of reponse) {
+			if (part.toUpperCase().startsWith('+CMGL:')) {
 				const splitedPart = part.split(',');
 
 				if (!isNaN(Number(splitedPart[1]))) {
@@ -520,7 +462,7 @@ export class Modem {
 				continue;
 			}
 
-			if (i % 2 === 1 && preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
+			if (preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
 				// read PDU mode message
 				const pduMessage = pdu.parse(part);
 
@@ -535,25 +477,6 @@ export class Modem {
 
 				continue;
 			}
-
-			if (i % 2 === 1 && preInformation && part.length > 0 && isNaN(preInformation.status)) {
-				// read SMS mode message
-
-				if (result[result.length - 1]?.index === preInformation.index) {
-					result[result.length - 1].message += `\n${part}`;
-					continue;
-				}
-
-				result.push({
-					index: preInformation.index,
-					status: preInformation.status,
-					sender: preInformation.sender,
-					timestamp: preInformation.timestamp,
-					message: part
-				});
-
-				continue;
-			}
 		}
 
 		if (this.options.enableConcatenation) {
@@ -561,7 +484,7 @@ export class Modem {
 			const notConnectable = [];
 
 			for (const item of result) {
-				if (item.pdu === undefined || item.pdu instanceof pdu.Report) {
+				if (item.pdu instanceof pdu.Report) {
 					notConnectable.push(item);
 					continue;
 				}
