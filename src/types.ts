@@ -53,4 +53,8 @@ export interface PduSms {
 
 import { AutoDetectTypes } from '@serialport/bindings-cpp';
 import { SerialPortOpenOptions } from 'serialport/dist/index';
+
+/**
+ * @see https://serialport.io/docs/api-bindings-cpp#open
+ */
 export type SerialPortOptions = SerialPortOpenOptions<AutoDetectTypes>;
