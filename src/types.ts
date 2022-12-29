@@ -19,8 +19,9 @@ export interface ModemConstructorOptions {
 // public function types and event types
 
 export type CommandResponse = string[];
-export type IncomingCall = { phoneNumber: string; scheme: string };
-export type IncomingUSSD = { text?: string; follow?: string; followCode?: number };
+export type OnIncomingCall = { phoneNumber: string; scheme: string };
+export type OnIncomingUSSD = { text?: string; follow?: string; followCode?: number };
+export type OnMemoryFull = { used: number; total: number };
 
 export interface SendSMSSuccess {
 	success: true;
