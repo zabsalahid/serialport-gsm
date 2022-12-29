@@ -14,10 +14,15 @@
 		"@typescript-eslint/parser": "5.46.0",
 		"eslint": "8.29.0",
 		"nodemon": "2.0.20",
+		"typedoc": "0.23.23",
 		"typescript": "4.9.4"
 	},
 	"scripts": {
-		"start": "nodemon ./example/test.js"
+		"build": "yarn build:lib && yarn build:docs",
+		"build:lib": "tsc",
+		"build:docs": "typedoc --entryPoints src/index.ts --out docs --excludePrivate --customCss ./typedoc.css",
+		"lint": "eslint src --ext .ts",
+		"prepack": "yarn build:lib"
 	},
 	"repository": {
 		"type": "git",

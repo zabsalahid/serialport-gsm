@@ -1,0 +1,42 @@
+pre {
+	border-radius: 0.5em;
+}
+
+code,
+pre {
+	border: none;
+	border-radius: 0.5em;
+}
+
+.tsd-page-toolbar {
+	border: none;
+}
+
+.tsd-generator {
+	border-top: none;
+	background: var(--color-background-secondary);
+	filter: brightness(1.1);
+}
+
+.menu-sticky-wrap {
+	margin-bottom: 1rem;
+}
+
+.tsd-member-group {
+	padding: 1.3em;
+	background: var(--color-background-secondary);
+	filter: brightness(1.25);
+	border-radius: 0.5em;
+}
+
+.tsd-signature {
+	border-radius: 0.5rem;
+}
+
+.tsd-signatures .tsd-signature {
+	border-radius: 0px;
+}
+
+.tsd-description .tsd-signatures .tsd-signature {
+	border-radius: 0.5em;
+}
