@@ -1,0 +1,29 @@
+name: 📖 Documentation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    name: 📦☁️ Release
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+
+      - name: ⚡ Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔨 Build documentation
+        run: yarn build:docs
+
+      - name: ☁️ Publish documentation
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          folder: docs
+          branch: gh-pages
