@@ -11,7 +11,7 @@
 		"serialport": "10.5.0"
 	},
 	"devDependencies": {
-		"@types/node": "18.11.18",
+		"@types/node": "16.11.7",
 		"@typescript-eslint/eslint-plugin": "5.47.1",
 		"@typescript-eslint/parser": "5.47.1",
 		"eslint": "8.31.0",
@@ -25,6 +25,9 @@
 		"build:docs": "typedoc --entryPoints src/index.ts --out docs --excludePrivate --customCss ./typedoc.css",
 		"lint": "eslint src --ext .ts",
 		"prepack": "yarn build:lib"
+	},
+	"engines": {
+		"node": ">=16.0.0"
 	},
 	"author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
 	"repository": {
