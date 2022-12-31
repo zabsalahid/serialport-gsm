@@ -1,7 +1,9 @@
 {
 	"name": "serialport-gsm",
 	"version": "3.4.2",
-	"description": "Serialport implementation for GSM commands (send text/flash messages, read, etc.)",
+	"description": "Library for the communication with GSM modems like sending and receiving SMS messages",
+	"license": "MIT",
+	"homepage": "https://github.com/zabsalahid/serialport-gsm#readme",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"dependencies": {
@@ -14,14 +16,23 @@
 		"@typescript-eslint/parser": "5.46.0",
 		"eslint": "8.29.0",
 		"nodemon": "2.0.20",
+		"typedoc": "0.23.23",
 		"typescript": "4.9.4"
 	},
 	"scripts": {
-		"start": "nodemon ./example/test.js"
+		"build": "yarn build:lib && yarn build:docs",
+		"build:lib": "tsc",
+		"build:docs": "typedoc --entryPoints src/index.ts --out docs --excludePrivate --customCss ./typedoc.css",
+		"lint": "eslint src --ext .ts",
+		"prepack": "yarn build:lib"
 	},
+	"author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/zabsalahid/serialport-gsm.git"
+		"url": "https://github.com/zabsalahid/serialport-gsm.git"
+	},
+	"bugs": {
+		"url": "https://github.com/zabsalahid/serialport-gsm/issues"
 	},
 	"keywords": [
 		"gsm",
@@ -37,18 +48,5 @@
 		"port",
 		"flash message",
 		"class 0"
-	],
-	"author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
-	"contributors": [
-		{
-			"name": "Paolo Brainard M. Reyes",
-			"email": "xreyes.paolox@gmail.com",
-			"url": "http://360logix.com"
-		}
-	],
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/zabsalahid/serialport-gsm/issues"
-	},
-	"homepage": "https://github.com/zabsalahid/serialport-gsm#readme"
+	]
 }

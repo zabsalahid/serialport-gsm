@@ -1,0 +1,40 @@
+name: 🔎 Lint
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore: [gh-pages]
+  pull_request:
+    branches-ignore: [gh-pages]
+    types: [opened, synchronize]
+
+jobs:
+  build:
+    name: 🔨 Build
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+
+      - name: ⚡ Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔨 Build
+        run: yarn build:lib
+
+  lint:
+    name: 🔎 Lint
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+
+      - name: ⚡ Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔎 Lint
+        run: yarn lint
