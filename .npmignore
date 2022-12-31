@@ -1,11 +1,13 @@
 .git
 .github
+docs
 node_modules
-lib
+src
 .editorconfig
 .eslintrc.js
 .gitignore
 .npmignore
 .prettierrc.js
 tsconfig.json
+typedoc.css
 yarn.lock
