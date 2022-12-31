@@ -1,5 +1,5 @@
+import { utils as pduUtils } from '@killerjulian/node-pdu';
 import { SerialPort } from 'serialport';
-import { utils as pduUtils } from '../lib/node-pdu/index';
 import { Modem } from '../Modem';
 import { CommandResponse } from '../types';
 import { Command } from './Command';

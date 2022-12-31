@@ -5,8 +5,8 @@
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"dependencies": {
-		"serialport": "10.5.0",
-		"moment": "2.29.4"
+		"@killerjulian/node-pdu": "2.0.0",
+		"serialport": "10.5.0"
 	},
 	"devDependencies": {
 		"@types/node": "18.11.12",

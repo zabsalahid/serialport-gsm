@@ -1,5 +1,5 @@
+import * as pdu from '@killerjulian/node-pdu';
 import { SerialPort } from 'serialport';
-import * as pdu from './lib/node-pdu/index';
 import { CommandResponse, ModemConstructorOptions, PduSms, SendSMSFailed, SendSMSSuccess, SerialPortOptions } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
