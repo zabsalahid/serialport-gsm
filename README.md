@@ -44,7 +44,7 @@ SerialPort-GSM is a simplified plugin for communicating with gsm modems, primari
 ```terminal
 npm install serialport-gsm
 ```
- 
+
 ## Example
 
 A full example can be found in the example directory.
@@ -134,14 +134,14 @@ Closes an open connection
 modem.close()
 ```
 
-#### Set Modem Mode	
-`setModemMode(callback, type)`	
+#### Set Modem Mode
+`setModemMode(callback, type)`
 * type can be `'PDU'` or `'SMS'`
 * Note: This module is focused on PDU mode as it is more supported in most GSMs.
 ```	js
-modem.on('open', data => {	
-    modem.setModemMode(callback, 'PDU')	
-})	
+modem.on('open', data => {
+    modem.setModemMode(callback, 'PDU')
+})
 ```
 
 #### Check Modem Communication
@@ -214,7 +214,7 @@ For executing a complex custom command with multi-line responses, you need your 
 modem.executeCommand(command, callback, priority, timeout)
 ```
 
-## Other Usage 
+## Other Usage
 ### Events
 #### open
 ```js
@@ -273,7 +273,7 @@ modem.port.SERIAL_PORT_PROTOTYPES
 
 ## Contributors
 Thanks goes to these wonderful people who contributed a lot in this project:
- 
+
 <a href="https://github.com/zabsalahid/serialport-gsm/graphs/contributors">
   <img src="https://contributors-img.firebaseapp.com/image?repo=zabsalahid/serialport-gsm" />
 </a>

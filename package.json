@@ -1,52 +1,54 @@
 {
-  "name": "serialport-gsm",
-  "version": "3.4.2",
-  "description": "Serialport implementation for GSM commands (send text/flash messages, read, etc.)",
-  "main": "lib/",
-  "directories": {
-    "lib": "lib"
-  },
-  "dependencies": {
-    "node-pdu": "^1.0.15",
-    "serialport": "^8.0.8"
-  },
-  "devDependencies": {
-    "nodemon": "^1.18.9"
-  },
-  "scripts": {
-    "start": "nodemon test.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zabsalahid/serialport-gsm.git"
-  },
-  "keywords": [
-    "gsm",
-    "at",
-    "commands",
-    "modem",
-    "sms",
-    "iot",
-    "serial port",
-    "serialport",
-    "serial",
-    "com",
-    "port",
-    "flash message",
-    "class 0"
-  ],
-  "author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
-  "contributors": [
-    {
-      "name": "Paolo Brainard M. Reyes",
-      "email": "xreyes.paolox@gmail.com",
-      "url": "http://360logix.com"
-    }
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/zabsalahid/serialport-gsm/issues"
-  },
-  "homepage": "https://github.com/zabsalahid/serialport-gsm#readme"
+	"name": "serialport-gsm",
+	"version": "3.4.2",
+	"description": "Serialport implementation for GSM commands (send text/flash messages, read, etc.)",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"dependencies": {
+		"@killerjulian/node-pdu": "2.0.0",
+		"serialport": "10.5.0"
+	},
+	"devDependencies": {
+		"@types/node": "18.11.12",
+		"@typescript-eslint/eslint-plugin": "5.46.0",
+		"@typescript-eslint/parser": "5.46.0",
+		"eslint": "8.29.0",
+		"nodemon": "2.0.20",
+		"typescript": "4.9.4"
+	},
+	"scripts": {
+		"start": "nodemon ./example/test.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zabsalahid/serialport-gsm.git"
+	},
+	"keywords": [
+		"gsm",
+		"at",
+		"commands",
+		"modem",
+		"sms",
+		"iot",
+		"serial port",
+		"serialport",
+		"serial",
+		"com",
+		"port",
+		"flash message",
+		"class 0"
+	],
+	"author": "Zabdiel G. Salahid <zabsalahid@gmail.com> (https://github.com/zabsalahid)",
+	"contributors": [
+		{
+			"name": "Paolo Brainard M. Reyes",
+			"email": "xreyes.paolox@gmail.com",
+			"url": "http://360logix.com"
+		}
+	],
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/zabsalahid/serialport-gsm/issues"
+	},
+	"homepage": "https://github.com/zabsalahid/serialport-gsm#readme"
 }
