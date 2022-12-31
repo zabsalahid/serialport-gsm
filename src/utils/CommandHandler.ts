@@ -63,6 +63,10 @@ export class CommandHandler {
 					break;
 				}
 			}
+
+			if (item.onFinish) {
+				item.onFinish();
+			}
 		}
 
 		this.isLocked = false;
@@ -105,8 +109,10 @@ export class CommandHandler {
 
 		try {
 			cmd.callback(result);
-		} finally {
-			// not used
+		} catch(error) {
+			if(error instanceof Error) {
+				return error;
+			}
 		}
 
 		return result;
