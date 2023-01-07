@@ -447,25 +447,24 @@ export class Modem {
 
 				if (!isNaN(Number(splitedPart[1]))) {
 					preInformation = {
-						index: parseInt(splitedPart[0].replace('+CMGL: ', ''), 10),
-						status: parseInt(splitedPart[1], 10)
+						index: Number(splitedPart[0].replace('+CMGL: ', '')),
+						status: Number(splitedPart[1])
 					};
 
 					continue;
 				}
 
 				preInformation = {
-					index: parseInt(splitedPart[0].replace('+CMGL: ', ''), 10),
-					status: parseInt(splitedPart[1].replace('"', ''), 10),
-					sender: splitedPart[2].replace('"', ''),
-					timestamp: splitedPart[4].replace('"', '') + ', ' + splitedPart[5].replace('"', '')
+					index: Number(splitedPart[0].replace('+CMGL: ', '')),
+					status: Number(splitedPart[1].replace(/"/g, '')),
+					sender: splitedPart[2].replace(/"/g, ''),
+					timestamp: splitedPart[4].replace(/"/g, '') + ', ' + splitedPart[5].replace(/"/g, '')
 				};
 
 				continue;
 			}
 
 			if (preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
-				// read PDU mode message
 				const pduMessage = pdu.parse(part);
 
 				result.push({
