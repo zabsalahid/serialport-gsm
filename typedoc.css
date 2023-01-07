@@ -6,6 +6,7 @@ code,
 pre {
 	border: none;
 	border-radius: 0.5em;
+	margin: 1em 0;
 }
 
 .tsd-page-toolbar {
