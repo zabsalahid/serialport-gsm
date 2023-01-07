@@ -17,7 +17,7 @@ Usage in JavaScript/TypeScript (with ES Modules):
 ```typescript
 import { Modem } from 'serialport-gsm';
 
-// Initalization of the modem. For more options take a look at the completefull documentaion
+// Initalization of the modem. For more options take a look at the full documentaion
 const myModem = new Modem('COM4');
 
 // You can listen to different events
