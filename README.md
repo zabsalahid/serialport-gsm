@@ -30,6 +30,8 @@ async function start() {
 
 	console.log('.checkModem()', await myModem.checkModem());
 	console.log('.getSignalInfo()', await myModem.getSignalInfo());
+	console.log('.getRegisteredNetwork()', await myModem.getRegisteredNetwork());
+	console.log('.getAvailableNetworks()', await myModem.getAvailableNetworks());
 	console.log('.checkSimMemory()', await myModem.checkSimMemory());
 	console.log('.getProductSerialNumber()', await myModem.getProductSerialNumber());
 	console.log('.getOwnNumber()', await myModem.getOwnNumber());
