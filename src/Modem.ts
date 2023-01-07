@@ -431,6 +431,55 @@ export class Modem {
 		return { deleted, failed };
 	}
 
+	async readSmsById(id: number, prio = false): Promise<PduSms> {
+		const reponse = await this.executeATCommand(`AT+CMGR=${id}`, prio);
+
+		if (resultCode(reponse.pop() || '') !== 'OK' || reponse.length % 2 !== 0) {
+			throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS (${id}) failed!`);
+		}
+
+		let preInformation;
+
+		for (const part of reponse) {
+			if (part.toUpperCase().startsWith('+CMGR:')) {
+				const splitedPart = part.split(',');
+
+				if (!isNaN(Number(splitedPart[1]))) {
+					preInformation = {
+						index: Number(splitedPart[0].replace('+CMGR: ', '')),
+						status: Number(splitedPart[1])
+					};
+
+					continue;
+				}
+
+				preInformation = {
+					index: Number(splitedPart[0].replace('+CMGR: ', '')),
+					status: Number(splitedPart[1].replace(/"/g, '')),
+					sender: splitedPart[2].replace(/"/g, ''),
+					timestamp: splitedPart[4].replace(/"/g, '') + ', ' + splitedPart[5].replace(/"/g, '')
+				};
+
+				continue;
+			}
+
+			if (preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
+				const pduMessage = pdu.parse(part);
+
+				return {
+					index: preInformation.index,
+					status: preInformation.status,
+					sender: pduMessage.address.phone || undefined,
+					message: pduMessage instanceof pdu.Report ? '' : pduMessage.data.getText(),
+					timestamp: pduMessage instanceof pdu.Deliver ? pduMessage.serviceCenterTimeStamp.getIsoString() : undefined,
+					pdu: pduMessage
+				};
+			}
+		}
+
+		throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS (${id}) failed!`);
+	}
+
 	async getSimInbox(prio = false) {
 		const reponse = await this.executeATCommand('AT+CMGL=4', prio);
 
