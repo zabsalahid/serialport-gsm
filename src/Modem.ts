@@ -244,8 +244,6 @@ export class Modem {
 	}
 
 	async sendSms(number: string, message: string, flashSms = false, prio = false): Promise<SendSmsSuccess> {
-		const messageID = `${Date.now()}`;
-
 		const submit = new pdu.Submit(number, message);
 		submit.dataCodingScheme.setUseMessageClass(flashSms);
 
@@ -271,7 +269,12 @@ export class Modem {
 			cmdSequence.onFailed = (error) => {
 				const result: SendSmsFailed = {
 					success: false,
-					messageID,
+					data: {
+						message,
+						recipient: number,
+						alert: flashSms,
+						pdu: submit
+					},
 					error
 				};
 
@@ -284,7 +287,6 @@ export class Modem {
 
 		const result: SendSmsSuccess = {
 			success: true,
-			messageID,
 			data: {
 				message,
 				recipient: number,

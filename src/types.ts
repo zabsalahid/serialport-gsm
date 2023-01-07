@@ -29,7 +29,6 @@ export interface SimMemoryInformation {
 
 export interface SendSmsSuccess {
 	success: true;
-	messageID: string;
 	data: {
 		message: string;
 		recipient: string;
@@ -40,7 +39,12 @@ export interface SendSmsSuccess {
 
 export interface SendSmsFailed {
 	success: false;
-	messageID: string;
+	data: {
+		message: string;
+		recipient: string;
+		alert: boolean;
+		pdu: Submit;
+	};
 	error: Error;
 }
 
