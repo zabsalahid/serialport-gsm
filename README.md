@@ -34,7 +34,7 @@ async function start() {
 	console.log('.getProductSerialNumber()', await myModem.getProductSerialNumber());
 	console.log('.getOwnNumber()', await myModem.getOwnNumber());
 	console.log('.getSimInbox()', await myModem.getSimInbox());
-	console.log('.sendSMS()', await myModem.sendSMS('+XXXXXXXXX', 'Hello, Zap here!'));
+	console.log('.sendSms()', await myModem.sendSms('+XXXXXXXXX', 'Hello, Zap here!'));
 
 	await myModem.close();
 }

@@ -109,8 +109,8 @@ export class CommandHandler {
 
 		try {
 			cmd.callback(result);
-		} catch(error) {
-			if(error instanceof Error) {
+		} catch (error) {
+			if (error instanceof Error) {
 				return error;
 			}
 		}
@@ -144,7 +144,7 @@ export class CommandHandler {
 				const smsID = Number(part.match(/\d+/g)?.[1] || NaN);
 
 				if (!isNaN(smsID)) {
-					this.events.emit('onNewSMS', smsID);
+					this.events.emit('onNewSms', smsID);
 				}
 
 				continue;

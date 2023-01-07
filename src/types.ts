@@ -8,7 +8,7 @@ import { Deliver, Report, Submit } from '@killerjulian/node-pdu';
 
 export interface ModemConstructorOptions {
 	pin?: string;
-	autoDeleteOnReceive?: boolean;
+	deleteSmsOnReceive?: boolean;
 	enableConcatenation?: boolean;
 	customInitCommand?: string;
 	autoInitOnOpen?: boolean;
@@ -21,11 +21,14 @@ export interface ModemConstructorOptions {
 export type CommandResponse = string[];
 export type OnIncomingCall = { phoneNumber: string; scheme: string };
 export type OnIncomingUSSD = { text?: string; follow?: string; followCode?: number };
-export type OnMemoryFull = { used: number; total: number };
 
-export interface SendSMSSuccess {
+export interface SimMemoryInformation {
+	used: number;
+	total: number;
+}
+
+export interface SendSmsSuccess {
 	success: true;
-	messageID: string;
 	data: {
 		message: string;
 		recipient: string;
@@ -34,9 +37,14 @@ export interface SendSMSSuccess {
 	};
 }
 
-export interface SendSMSFailed {
+export interface SendSmsFailed {
 	success: false;
-	messageID: string;
+	data: {
+		message: string;
+		recipient: string;
+		alert: boolean;
+		pdu: Submit;
+	};
 	error: Error;
 }
 
@@ -47,7 +55,7 @@ export interface PduSms {
 	message: string;
 	timestamp?: string;
 	pdu: Deliver | Report | Submit;
-	concatenatedMessages?: number[];
+	referencedSmsIDs?: number[];
 }
 
 // SerialPortOptions

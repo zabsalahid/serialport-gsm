@@ -1,6 +1,14 @@
 import * as pdu from '@killerjulian/node-pdu';
 import { SerialPort } from 'serialport';
-import { CommandResponse, ModemConstructorOptions, PduSms, SendSMSFailed, SendSMSSuccess, SerialPortOptions } from './types';
+import {
+	CommandResponse,
+	ModemConstructorOptions,
+	PduSms,
+	SendSmsFailed,
+	SendSmsSuccess,
+	SerialPortOptions,
+	SimMemoryInformation
+} from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
 import { Events } from './utils/Events';
@@ -20,8 +28,8 @@ export class Modem {
 		this.pinCode = options.pin || null;
 
 		this.options = {
-			autoDeleteOnReceive: options.autoDeleteOnReceive !== undefined ? options.autoDeleteOnReceive : false,
-			enableConcatenation: options.enableConcatenation !== undefined ? options.enableConcatenation : false,
+			deleteSmsOnReceive: options.deleteSmsOnReceive !== undefined ? options.deleteSmsOnReceive : false,
+			enableConcatenation: options.enableConcatenation !== undefined ? options.enableConcatenation : true,
 			customInitCommand: options.customInitCommand !== undefined ? options.customInitCommand : null,
 			autoInitOnOpen: options.autoInitOnOpen !== undefined ? options.autoInitOnOpen : true,
 			cnmiCommand: options.cnmiCommand !== undefined ? options.cnmiCommand : 'AT+CNMI=2,1,0,2,1'
@@ -50,6 +58,8 @@ export class Modem {
 
 		this.port = new SerialPort(serialPortOptions);
 		this.cmdHandler = new CommandHandler(this, this.port, this.events);
+
+		this.on('onNewSms', (id) => this.options.deleteSmsOnReceive && this.deleteSms(id).catch());
 	}
 
 	/*
@@ -233,11 +243,9 @@ export class Modem {
 		return { status: 'OK' };
 	}
 
-	async sendSMS(number: string, message: string, flashSMS = false, prio = false): Promise<SendSMSSuccess> {
-		const messageID = `${Date.now()}`;
-
+	async sendSms(number: string, message: string, flashSms = false, prio = false): Promise<SendSmsSuccess> {
 		const submit = new pdu.Submit(number, message);
-		submit.dataCodingScheme.setUseMessageClass(flashSMS);
+		submit.dataCodingScheme.setUseMessageClass(flashSms);
 
 		const checkReponse = (response: CommandResponse | Error) => {
 			if (response instanceof Error || resultCode(response.pop() || '') !== 'OK') {
@@ -259,31 +267,35 @@ export class Modem {
 			cmdSequence.onFinish = () => resolve(true);
 
 			cmdSequence.onFailed = (error) => {
-				const result: SendSMSFailed = {
+				const result: SendSmsFailed = {
 					success: false,
-					messageID,
+					data: {
+						message,
+						recipient: number,
+						alert: flashSms,
+						pdu: submit
+					},
 					error
 				};
 
-				this.events.emit('onSMSsentFailed', result);
+				this.events.emit('onSmsSentFailed', result);
 				reject(error);
 			};
 
 			this.cmdHandler.pushToQueue(cmdSequence, prio);
 		});
 
-		const result: SendSMSSuccess = {
+		const result: SendSmsSuccess = {
 			success: true,
-			messageID,
 			data: {
 				message,
 				recipient: number,
-				alert: flashSMS,
+				alert: flashSms,
 				pdu: submit
 			}
 		};
 
-		this.events.emit('onSMSsent', result);
+		this.events.emit('onSmsSent', result);
 		return result;
 	}
 
@@ -306,7 +318,7 @@ export class Modem {
 		};
 	}
 
-	async checkSimMemory(prio = false) {
+	async checkSimMemory(prio = false): Promise<SimMemoryInformation> {
 		const response = await this.executeATCommand('AT+CPMS="SM"', prio);
 
 		if (resultCode(response.pop() || '') !== 'OK') {
@@ -396,7 +408,7 @@ export class Modem {
 		}
 	}
 
-	async deleteAllSMS(prio = false) {
+	async deleteAllSms(prio = false) {
 		const response = await simplifyResponse(this.executeATCommand('AT+CMGD=1,4', prio));
 
 		if (resultCode(response) !== 'OK') {
@@ -404,7 +416,7 @@ export class Modem {
 		}
 	}
 
-	async deleteSMS(id: number, prio = false) {
+	async deleteSms(id: number, prio = false) {
 		const response = await simplifyResponse(this.executeATCommand(`AT+CMGD=${id}`, prio));
 
 		if (resultCode(response) !== 'OK') {
@@ -413,13 +425,13 @@ export class Modem {
 	}
 
 	async deleteMessage(message: PduSms, prio = false) {
-		const indexes = message.concatenatedMessages?.sort((a, b) => b - a) || [message.index];
+		const indexes = message.referencedSmsIDs?.sort((a, b) => b - a) || [message.index];
 		const deleted: number[] = [];
 		const failed: number[] = [];
 
 		for (const id of indexes) {
 			try {
-				await this.deleteSMS(id, prio);
+				await this.deleteSms(id, prio);
 				deleted.push(id);
 			} catch (e) {
 				failed.push(id);
@@ -427,6 +439,55 @@ export class Modem {
 		}
 
 		return { deleted, failed };
+	}
+
+	async readSmsById(id: number, prio = false): Promise<PduSms> {
+		const reponse = await this.executeATCommand(`AT+CMGR=${id}`, prio);
+
+		if (resultCode(reponse.pop() || '') !== 'OK' || reponse.length % 2 !== 0) {
+			throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS (${id}) failed!`);
+		}
+
+		let preInformation;
+
+		for (const part of reponse) {
+			if (part.toUpperCase().startsWith('+CMGR:')) {
+				const splitedPart = part.split(',');
+
+				if (!isNaN(Number(splitedPart[1]))) {
+					preInformation = {
+						index: Number(splitedPart[0].substring(7)),
+						status: Number(splitedPart[1])
+					};
+
+					continue;
+				}
+
+				preInformation = {
+					index: Number(splitedPart[0].substring(7)),
+					status: Number(splitedPart[1].replace(/"/g, '')),
+					sender: splitedPart[2].replace(/"/g, ''),
+					timestamp: splitedPart[4].replace(/"/g, '') + ', ' + splitedPart[5].replace(/"/g, '')
+				};
+
+				continue;
+			}
+
+			if (preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
+				const pduMessage = pdu.parse(part);
+
+				return {
+					index: preInformation.index,
+					status: preInformation.status,
+					sender: pduMessage.address.phone || undefined,
+					message: pduMessage instanceof pdu.Report ? '' : pduMessage.data.getText(),
+					timestamp: pduMessage instanceof pdu.Deliver ? pduMessage.serviceCenterTimeStamp.getIsoString() : undefined,
+					pdu: pduMessage
+				};
+			}
+		}
+
+		throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS (${id}) failed!`);
 	}
 
 	async getSimInbox(prio = false) {
@@ -445,25 +506,24 @@ export class Modem {
 
 				if (!isNaN(Number(splitedPart[1]))) {
 					preInformation = {
-						index: parseInt(splitedPart[0].replace('+CMGL: ', ''), 10),
-						status: parseInt(splitedPart[1], 10)
+						index: Number(splitedPart[0].substring(7)),
+						status: Number(splitedPart[1])
 					};
 
 					continue;
 				}
 
 				preInformation = {
-					index: parseInt(splitedPart[0].replace('+CMGL: ', ''), 10),
-					status: parseInt(splitedPart[1].replace('"', ''), 10),
-					sender: splitedPart[2].replace('"', ''),
-					timestamp: splitedPart[4].replace('"', '') + ', ' + splitedPart[5].replace('"', '')
+					index: Number(splitedPart[0].substring(7)),
+					status: Number(splitedPart[1].replace(/"/g, '')),
+					sender: splitedPart[2].replace(/"/g, ''),
+					timestamp: splitedPart[4].replace(/"/g, '') + ', ' + splitedPart[5].replace(/"/g, '')
 				};
 
 				continue;
 			}
 
 			if (preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
-				// read PDU mode message
 				const pduMessage = pdu.parse(part);
 
 				result.push({
@@ -508,7 +568,7 @@ export class Modem {
 					pointer,
 					Object.assign(existingReference, {
 						message: existingReference.pdu.data.getText(),
-						concatenatedMessages: [...(existingReference.concatenatedMessages || []), item.index]
+						referencedSmsIDs: [...(existingReference.referencedSmsIDs || []), item.index]
 					})
 				);
 			}
