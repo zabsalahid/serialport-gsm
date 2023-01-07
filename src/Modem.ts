@@ -1,6 +1,14 @@
 import * as pdu from '@killerjulian/node-pdu';
 import { SerialPort } from 'serialport';
-import { CommandResponse, ModemConstructorOptions, PduSms, SendSmsFailed, SendSmsSuccess, SerialPortOptions } from './types';
+import {
+	CommandResponse,
+	ModemConstructorOptions,
+	PduSms,
+	SendSmsFailed,
+	SendSmsSuccess,
+	SerialPortOptions,
+	SimMemoryInformation
+} from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
 import { Events } from './utils/Events';
@@ -308,7 +316,7 @@ export class Modem {
 		};
 	}
 
-	async checkSimMemory(prio = false) {
+	async checkSimMemory(prio = false): Promise<SimMemoryInformation> {
 		const response = await this.executeATCommand('AT+CPMS="SM"', prio);
 
 		if (resultCode(response.pop() || '') !== 'OK') {

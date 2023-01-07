@@ -21,7 +21,11 @@ export interface ModemConstructorOptions {
 export type CommandResponse = string[];
 export type OnIncomingCall = { phoneNumber: string; scheme: string };
 export type OnIncomingUSSD = { text?: string; follow?: string; followCode?: number };
-export type OnMemoryFull = { used: number; total: number };
+
+export interface SimMemoryInformation {
+	used: number;
+	total: number;
+}
 
 export interface SendSmsSuccess {
 	success: true;

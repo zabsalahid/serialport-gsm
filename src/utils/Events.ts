@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { CommandResponse, OnIncomingCall, OnIncomingUSSD, OnMemoryFull, SendSmsFailed, SendSmsSuccess } from '../types';
+import { CommandResponse, OnIncomingCall, OnIncomingUSSD, SendSmsFailed, SendSmsSuccess, SimMemoryInformation } from '../types';
 
 export declare interface Events {
 	emit(event: 'onOpen'): boolean;
@@ -13,7 +13,7 @@ export declare interface Events {
 	emit(event: 'onCommandResponse', data: CommandResponse): boolean;
 	emit(event: 'onNewIncomingCall', data: OnIncomingCall): boolean;
 	emit(event: 'onNewIncomingUSSD', data: OnIncomingUSSD): boolean;
-	emit(event: 'onMemoryFull', data: OnMemoryFull): boolean;
+	emit(event: 'onMemoryFull', data: SimMemoryInformation): boolean;
 
 	on(event: 'onOpen', listener: () => void): this;
 	on(event: 'onClose', listener: () => void): this;
@@ -26,7 +26,7 @@ export declare interface Events {
 	on(event: 'onCommandResponse', listener: (data: CommandResponse) => void): this;
 	on(event: 'onNewIncomingCall', listener: (data: OnIncomingCall) => void): this;
 	on(event: 'onNewIncomingUSSD', listener: (data: OnIncomingUSSD) => void): this;
-	on(event: 'onMemoryFull', listener: (data: OnMemoryFull) => void): this;
+	on(event: 'onMemoryFull', listener: (data: SimMemoryInformation) => void): this;
 
 	once(event: 'onOpen', listener: () => void): this;
 	once(event: 'onClose', listener: () => void): this;
@@ -39,7 +39,7 @@ export declare interface Events {
 	once(event: 'onCommandResponse', listener: (data: CommandResponse) => void): this;
 	once(event: 'onNewIncomingCall', listener: (data: OnIncomingCall) => void): this;
 	once(event: 'onNewIncomingUSSD', listener: (data: OnIncomingUSSD) => void): this;
-	once(event: 'onMemoryFull', listener: (data: OnMemoryFull) => void): this;
+	once(event: 'onMemoryFull', listener: (data: SimMemoryInformation) => void): this;
 
 	removeListener(...params: Parameters<EventEmitter['removeListener']>): this;
 }
