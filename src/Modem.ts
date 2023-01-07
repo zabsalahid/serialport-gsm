@@ -1,6 +1,6 @@
 import * as pdu from '@killerjulian/node-pdu';
 import { SerialPort } from 'serialport';
-import { CommandResponse, ModemConstructorOptions, PduSms, SendSMSFailed, SendSMSSuccess, SerialPortOptions } from './types';
+import { CommandResponse, ModemConstructorOptions, PduSms, SendSmsFailed, SendSmsSuccess, SerialPortOptions } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
 import { Events } from './utils/Events';
@@ -233,11 +233,11 @@ export class Modem {
 		return { status: 'OK' };
 	}
 
-	async sendSMS(number: string, message: string, flashSMS = false, prio = false): Promise<SendSMSSuccess> {
+	async sendSms(number: string, message: string, flashSms = false, prio = false): Promise<SendSmsSuccess> {
 		const messageID = `${Date.now()}`;
 
 		const submit = new pdu.Submit(number, message);
-		submit.dataCodingScheme.setUseMessageClass(flashSMS);
+		submit.dataCodingScheme.setUseMessageClass(flashSms);
 
 		const checkReponse = (response: CommandResponse | Error) => {
 			if (response instanceof Error || resultCode(response.pop() || '') !== 'OK') {
@@ -259,31 +259,31 @@ export class Modem {
 			cmdSequence.onFinish = () => resolve(true);
 
 			cmdSequence.onFailed = (error) => {
-				const result: SendSMSFailed = {
+				const result: SendSmsFailed = {
 					success: false,
 					messageID,
 					error
 				};
 
-				this.events.emit('onSMSsentFailed', result);
+				this.events.emit('onSmsSentFailed', result);
 				reject(error);
 			};
 
 			this.cmdHandler.pushToQueue(cmdSequence, prio);
 		});
 
-		const result: SendSMSSuccess = {
+		const result: SendSmsSuccess = {
 			success: true,
 			messageID,
 			data: {
 				message,
 				recipient: number,
-				alert: flashSMS,
+				alert: flashSms,
 				pdu: submit
 			}
 		};
 
-		this.events.emit('onSMSsent', result);
+		this.events.emit('onSmsSent', result);
 		return result;
 	}
 
@@ -396,7 +396,7 @@ export class Modem {
 		}
 	}
 
-	async deleteAllSMS(prio = false) {
+	async deleteAllSms(prio = false) {
 		const response = await simplifyResponse(this.executeATCommand('AT+CMGD=1,4', prio));
 
 		if (resultCode(response) !== 'OK') {
@@ -404,7 +404,7 @@ export class Modem {
 		}
 	}
 
-	async deleteSMS(id: number, prio = false) {
+	async deleteSms(id: number, prio = false) {
 		const response = await simplifyResponse(this.executeATCommand(`AT+CMGD=${id}`, prio));
 
 		if (resultCode(response) !== 'OK') {
@@ -419,7 +419,7 @@ export class Modem {
 
 		for (const id of indexes) {
 			try {
-				await this.deleteSMS(id, prio);
+				await this.deleteSms(id, prio);
 				deleted.push(id);
 			} catch (e) {
 				failed.push(id);

@@ -144,7 +144,7 @@ export class CommandHandler {
 				const smsID = Number(part.match(/\d+/g)?.[1] || NaN);
 
 				if (!isNaN(smsID)) {
-					this.events.emit('onNewSMS', smsID);
+					this.events.emit('onNewSms', smsID);
 				}
 
 				continue;

@@ -23,7 +23,7 @@ export type OnIncomingCall = { phoneNumber: string; scheme: string };
 export type OnIncomingUSSD = { text?: string; follow?: string; followCode?: number };
 export type OnMemoryFull = { used: number; total: number };
 
-export interface SendSMSSuccess {
+export interface SendSmsSuccess {
 	success: true;
 	messageID: string;
 	data: {
@@ -34,7 +34,7 @@ export interface SendSMSSuccess {
 	};
 }
 
-export interface SendSMSFailed {
+export interface SendSmsFailed {
 	success: false;
 	messageID: string;
 	error: Error;
