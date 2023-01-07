@@ -109,8 +109,8 @@ export class CommandHandler {
 
 		try {
 			cmd.callback(result);
-		} catch(error) {
-			if(error instanceof Error) {
+		} catch (error) {
+			if (error instanceof Error) {
 				return error;
 			}
 		}
