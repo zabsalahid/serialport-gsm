@@ -20,8 +20,8 @@ export class Modem {
 		this.pinCode = options.pin || null;
 
 		this.options = {
-			enableConcatenation: options.enableConcatenation !== undefined ? options.enableConcatenation : false,
 			deleteSmsOnReceive: options.deleteSmsOnReceive !== undefined ? options.deleteSmsOnReceive : false,
+			enableConcatenation: options.enableConcatenation !== undefined ? options.enableConcatenation : true,
 			customInitCommand: options.customInitCommand !== undefined ? options.customInitCommand : null,
 			autoInitOnOpen: options.autoInitOnOpen !== undefined ? options.autoInitOnOpen : true,
 			cnmiCommand: options.cnmiCommand !== undefined ? options.cnmiCommand : 'AT+CNMI=2,1,0,2,1'
@@ -415,7 +415,7 @@ export class Modem {
 	}
 
 	async deleteMessage(message: PduSms, prio = false) {
-		const indexes = message.concatenatedMessages?.sort((a, b) => b - a) || [message.index];
+		const indexes = message.referencedSmsIDs?.sort((a, b) => b - a) || [message.index];
 		const deleted: number[] = [];
 		const failed: number[] = [];
 
@@ -510,7 +510,7 @@ export class Modem {
 					pointer,
 					Object.assign(existingReference, {
 						message: existingReference.pdu.data.getText(),
-						concatenatedMessages: [...(existingReference.concatenatedMessages || []), item.index]
+						referencedSmsIDs: [...(existingReference.referencedSmsIDs || []), item.index]
 					})
 				);
 			}

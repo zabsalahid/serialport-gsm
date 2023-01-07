@@ -47,7 +47,7 @@ export interface PduSms {
 	message: string;
 	timestamp?: string;
 	pdu: Deliver | Report | Submit;
-	concatenatedMessages?: number[];
+	referencedSmsIDs?: number[];
 }
 
 // SerialPortOptions
