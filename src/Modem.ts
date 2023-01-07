@@ -446,7 +446,7 @@ export class Modem {
 
 				if (!isNaN(Number(splitedPart[1]))) {
 					preInformation = {
-						index: Number(splitedPart[0].replace('+CMGR: ', '')),
+						index: Number(splitedPart[0].substring(7)),
 						status: Number(splitedPart[1])
 					};
 
@@ -454,7 +454,7 @@ export class Modem {
 				}
 
 				preInformation = {
-					index: Number(splitedPart[0].replace('+CMGR: ', '')),
+					index: Number(splitedPart[0].substring(7)),
 					status: Number(splitedPart[1].replace(/"/g, '')),
 					sender: splitedPart[2].replace(/"/g, ''),
 					timestamp: splitedPart[4].replace(/"/g, '') + ', ' + splitedPart[5].replace(/"/g, '')
@@ -496,7 +496,7 @@ export class Modem {
 
 				if (!isNaN(Number(splitedPart[1]))) {
 					preInformation = {
-						index: Number(splitedPart[0].replace('+CMGL: ', '')),
+						index: Number(splitedPart[0].substring(7)),
 						status: Number(splitedPart[1])
 					};
 
@@ -504,7 +504,7 @@ export class Modem {
 				}
 
 				preInformation = {
-					index: Number(splitedPart[0].replace('+CMGL: ', '')),
+					index: Number(splitedPart[0].substring(7)),
 					status: Number(splitedPart[1].replace(/"/g, '')),
 					sender: splitedPart[2].replace(/"/g, ''),
 					timestamp: splitedPart[4].replace(/"/g, '') + ', ' + splitedPart[5].replace(/"/g, '')
