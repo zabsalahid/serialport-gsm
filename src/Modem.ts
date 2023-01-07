@@ -20,8 +20,8 @@ export class Modem {
 		this.pinCode = options.pin || null;
 
 		this.options = {
-			autoDeleteOnReceive: options.autoDeleteOnReceive !== undefined ? options.autoDeleteOnReceive : false,
 			enableConcatenation: options.enableConcatenation !== undefined ? options.enableConcatenation : false,
+			deleteSmsOnReceive: options.deleteSmsOnReceive !== undefined ? options.deleteSmsOnReceive : false,
 			customInitCommand: options.customInitCommand !== undefined ? options.customInitCommand : null,
 			autoInitOnOpen: options.autoInitOnOpen !== undefined ? options.autoInitOnOpen : true,
 			cnmiCommand: options.cnmiCommand !== undefined ? options.cnmiCommand : 'AT+CNMI=2,1,0,2,1'
@@ -50,6 +50,8 @@ export class Modem {
 
 		this.port = new SerialPort(serialPortOptions);
 		this.cmdHandler = new CommandHandler(this, this.port, this.events);
+
+		this.on('onNewSms', (id) => this.options.deleteSmsOnReceive && this.deleteSms(id).catch());
 	}
 
 	/*

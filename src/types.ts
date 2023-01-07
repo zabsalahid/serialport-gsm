@@ -8,7 +8,7 @@ import { Deliver, Report, Submit } from '@killerjulian/node-pdu';
 
 export interface ModemConstructorOptions {
 	pin?: string;
-	autoDeleteOnReceive?: boolean;
+	deleteSmsOnReceive?: boolean;
 	enableConcatenation?: boolean;
 	customInitCommand?: string;
 	autoInitOnOpen?: boolean;
