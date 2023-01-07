@@ -318,6 +318,24 @@ export class Modem {
 		};
 	}
 
+	async getRegisteredNetwork(prio = false) {
+		const response = await simplifyResponse(this.executeATCommand('AT+COPS?', prio));
+
+		if (!response.toUpperCase().startsWith('+COPS: ') || response.toUpperCase().includes('ERROR')) {
+			throw new Error(`serialport-gsm/${this.port.path}: The network signal could not be read!`);
+		}
+
+		const splitedResponse = response.substring(7).split(',');
+		const format = splitedResponse[1];
+		const data = splitedResponse[2];
+
+		return {
+			mode: splitedResponse[0],
+			name: data?.length > 0 && format === '0' ? data.replace(/"/g, '') : undefined,
+			shortName: data?.length > 0 && format === '1' ? data.replace(/"/g, '') : undefined,
+			numeric: data?.length > 0 && format === '2' ? data.replace(/"/g, '') : undefined
+		};
+	}
 	async checkSimMemory(prio = false): Promise<SimMemoryInformation> {
 		const response = await this.executeATCommand('AT+CPMS="SM"', prio);
 
