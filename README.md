@@ -44,7 +44,7 @@ async function start() {
 start();
 ```
 
-You can find more information in the **[full documentaion](https://zabsalahid.github.io/serialport-gsm/)**.
+You can find more information in the **[full documentation](https://zabsalahid.github.io/serialport-gsm/)**.
 
 ---
 
