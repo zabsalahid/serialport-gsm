@@ -1,4 +1,4 @@
-import * as pdu from '@killerjulian/node-pdu';
+import { Deliver, parse as parsePdu, Report, Submit } from '@killerjulian/node-pdu';
 import { SerialPort } from 'serialport';
 import {
 	CommandResponse,
@@ -244,7 +244,7 @@ export class Modem {
 	}
 
 	async sendSms(number: string, message: string, flashSms = false, prio = false): Promise<SendSmsSuccess> {
-		const submit = new pdu.Submit(number, message);
+		const submit = new Submit(number, message);
 		submit.dataCodingScheme.setUseMessageClass(flashSms);
 
 		const checkReponse = (response: CommandResponse | Error) => {
@@ -520,14 +520,14 @@ export class Modem {
 			}
 
 			if (preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
-				const pduMessage = pdu.parse(part);
+				const pduMessage = parsePdu(part);
 
 				return {
 					index: preInformation.index,
 					status: preInformation.status,
 					sender: pduMessage.address.phone || undefined,
-					message: pduMessage instanceof pdu.Report ? '' : pduMessage.data.getText(),
-					timestamp: pduMessage instanceof pdu.Deliver ? pduMessage.serviceCenterTimeStamp.getIsoString() : undefined,
+					message: pduMessage instanceof Report ? '' : pduMessage.data.getText(),
+					timestamp: pduMessage instanceof Deliver ? pduMessage.serviceCenterTimeStamp.getIsoString() : undefined,
 					pdu: pduMessage
 				};
 			}
@@ -570,14 +570,14 @@ export class Modem {
 			}
 
 			if (preInformation && /[0-9A-Fa-f]{15}/g.test(part)) {
-				const pduMessage = pdu.parse(part);
+				const pduMessage = parsePdu(part);
 
 				result.push({
 					index: preInformation.index,
 					status: preInformation.status,
 					sender: pduMessage.address.phone || undefined,
-					message: pduMessage instanceof pdu.Report ? '' : pduMessage.data.getText(),
-					timestamp: pduMessage instanceof pdu.Deliver ? pduMessage.serviceCenterTimeStamp.getIsoString() : undefined,
+					message: pduMessage instanceof Report ? '' : pduMessage.data.getText(),
+					timestamp: pduMessage instanceof Deliver ? pduMessage.serviceCenterTimeStamp.getIsoString() : undefined,
 					pdu: pduMessage
 				});
 
@@ -590,7 +590,7 @@ export class Modem {
 			const notConnectable = [];
 
 			for (const item of result) {
-				if (item.pdu instanceof pdu.Report) {
+				if (item.pdu instanceof Report) {
 					notConnectable.push(item);
 					continue;
 				}
@@ -603,7 +603,7 @@ export class Modem {
 
 				const existingReference = pduSms.get(pointer);
 
-				if (!existingReference || existingReference.pdu instanceof pdu.Report) {
+				if (!existingReference || existingReference.pdu instanceof Report) {
 					pduSms.set(pointer, item);
 					continue;
 				}
