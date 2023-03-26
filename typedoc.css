@@ -41,3 +41,11 @@ pre {
 .tsd-description .tsd-signatures .tsd-signature {
 	border-radius: 0.5em;
 }
+
+/*
+ * Fixing a display error in the current TypeDoc version 0.23.28
+ */
+
+.tsd-index-section {
+	display: block !important;
+}
