@@ -27,23 +27,23 @@ export interface SimMemoryInformation {
 	total: number;
 }
 
-export interface SendSmsSuccess {
+export interface SendSmsSuccess<T extends Deliver | Submit = Deliver | Submit> {
 	success: true;
 	data: {
 		message: string;
 		recipient: string;
 		alert: boolean;
-		pdu: Submit;
+		pdu: T;
 	};
 }
 
-export interface SendSmsFailed {
+export interface SendSmsFailed<T extends Deliver | Submit = Deliver | Submit> {
 	success: false;
 	data: {
 		message: string;
 		recipient: string;
 		alert: boolean;
-		pdu: Submit;
+		pdu: T;
 	};
 	error: Error;
 }
