@@ -11,7 +11,7 @@ import {
 } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
-import { Events } from './utils/Events';
+import { Events, EventTypes } from './utils/Events';
 import { CmdStack, ModemMode, ModemOptions, resultCode, simplifyResponse } from './utils/utils';
 
 export class Modem {
@@ -636,10 +636,18 @@ export class Modem {
 	}
 
 	/*
-	 * bind the events
+	 * events
 	 */
 
-	on = this.events.on.bind(this.events);
-	once = this.events.once.bind(this.events);
-	removeListener = this.events.removeListener.bind(this.events);
+	on<T extends keyof EventTypes>(eventName: T, listener: EventTypes[T]) {
+		this.events.on(eventName, listener);
+	}
+
+	once<T extends keyof EventTypes>(eventName: T, listener: EventTypes[T]) {
+		this.events.once(eventName, listener);
+	}
+
+	removeListener(eventName: keyof EventTypes, listener: (...args: unknown[]) => void) {
+		this.events.removeListener(eventName, listener);
+	}
 }

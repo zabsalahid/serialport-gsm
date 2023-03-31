@@ -18,6 +18,8 @@ export interface ModemConstructorOptions {
 
 // public function types and event types
 
+export { EventTypes } from './utils/Events';
+
 export type CommandResponse = string[];
 export type OnIncomingCall = { phoneNumber: string; scheme: string };
 export type OnIncomingUSSD = { text?: string; follow?: string; followCode?: number };
