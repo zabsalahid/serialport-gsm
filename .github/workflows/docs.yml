@@ -5,16 +5,31 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
 jobs:
   release:
     name: 📦☁️ Release
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
+    runs-on: ubuntu-latest
 
-      - uses: actions/setup-node@v1
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/configure-pages@v3
+
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: '18.x'
 
       - name: ⚡ Install dependencies
         run: yarn install --frozen-lockfile
@@ -22,8 +37,11 @@ jobs:
       - name: 🔨 Build documentation
         run: yarn build:docs
 
-      - name: ☁️ Publish documentation
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+      - name: 📡 Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          folder: docs
-          branch: gh-pages
+          path: docs
+
+      - name: ☁️ Publish documentation
+        id: deployment
+        uses: actions/deploy-pages@v2
