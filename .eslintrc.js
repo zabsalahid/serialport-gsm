@@ -1,45 +1,25 @@
 module.exports = {
-	ignorePatterns: ['dist/', 'node_modules/'],
+	root: true,
+	ignorePatterns: ['dist/', 'node_modules/', '.eslintrc.js', '.prettierrc.js'],
+	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
+	plugins: ['@typescript-eslint'],
 	env: {
 		es6: true,
 		node: true
 	},
-	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
-	globals: {
-		Atomics: 'readonly',
-		SharedArrayBuffer: 'readonly'
-	},
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
-		ecmaVersion: 2018,
-		sourceType: 'module'
+		ecmaVersion: 2021,
+		sourceType: 'module',
+		project: ['./tsconfig.json', './tests/tsconfig.json'],
+		tsconfigRootDir: __dirname
 	},
-	plugins: ['@typescript-eslint'],
 	rules: {
-		indent: [
-			'error',
-			'tab',
-			{
-				SwitchCase: 1
-			}
-		],
-		'linebreak-style': ['error', 'unix'],
-		quotes: ['error', 'single'],
-		semi: ['error', 'always'],
-		'space-before-blocks': 'error',
-		'space-before-function-paren': [
-			'error',
-			{
-				anonymous: 'never',
-				named: 'never',
-				asyncArrow: 'always'
-			}
-		],
-		'space-in-parens': 'error',
-		'space-infix-ops': 'error',
-		'space-unary-ops': 'error',
-		'spaced-comment': 'error',
+		eqeqeq: 'error',
+		curly: 'error',
 		yoda: 'error',
-		'no-unused-vars': 'off'
+		'linebreak-style': ['error', 'unix'],
+		'space-infix-ops': 'error',
+		'space-unary-ops': 'error'
 	}
 };

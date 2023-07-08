@@ -10,4 +10,3 @@ export async function listSerialDevices() {
 
 export { Modem } from './Modem';
 export * as types from './types';
-

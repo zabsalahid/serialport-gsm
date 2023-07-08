@@ -26,19 +26,19 @@ myModem.on('onDataReceived', (data) => console.log('<:', data.replace(/\n|\r/g, 
 
 // Do whatever you want
 async function start() {
-	await myModem.open();
+  await myModem.open();
 
-	console.log('.checkModem()', await myModem.checkModem());
-	console.log('.getSignalInfo()', await myModem.getSignalInfo());
-	console.log('.getRegisteredNetwork()', await myModem.getRegisteredNetwork());
-	console.log('.getAvailableNetworks()', await myModem.getAvailableNetworks());
-	console.log('.checkSimMemory()', await myModem.checkSimMemory());
-	console.log('.getProductSerialNumber()', await myModem.getProductSerialNumber());
-	console.log('.getOwnNumber()', await myModem.getOwnNumber());
-	console.log('.getSimInbox()', await myModem.getSimInbox());
-	console.log('.sendSms()', await myModem.sendSms('+XXXXXXXXX', 'Hello, Zap here!'));
+  console.log('.checkModem()', await myModem.checkModem());
+  console.log('.getSignalInfo()', await myModem.getSignalInfo());
+  console.log('.getRegisteredNetwork()', await myModem.getRegisteredNetwork());
+  console.log('.getAvailableNetworks()', await myModem.getAvailableNetworks());
+  console.log('.checkSimMemory()', await myModem.checkSimMemory());
+  console.log('.getProductSerialNumber()', await myModem.getProductSerialNumber());
+  console.log('.getOwnNumber()', await myModem.getOwnNumber());
+  console.log('.getSimInbox()', await myModem.getSimInbox());
+  console.log('.sendSms()', await myModem.sendSms('+XXXXXXXXX', 'Hello, Zap here!'));
 
-	await myModem.close();
+  await myModem.close();
 }
 
 start();
