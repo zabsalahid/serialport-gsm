@@ -2,11 +2,15 @@ pre {
 	border-radius: 0.5em;
 }
 
+hr {
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
 code,
 pre {
 	border: none;
 	border-radius: 0.5em;
-	margin: 1em 0;
 }
 
 .tsd-page-toolbar {
@@ -43,7 +47,7 @@ pre {
 }
 
 /*
- * Fixing a display error in the current TypeDoc version 0.23.28
+ * Error in the display "Index-Content" fixed
  */
 
 .tsd-index-section {

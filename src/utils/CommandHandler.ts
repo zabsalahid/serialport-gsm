@@ -1,4 +1,4 @@
-import { utils as pduUtils } from '@killerjulian/node-pdu';
+import { utils as pduUtils } from 'node-pdu';
 import { SerialPort } from 'serialport';
 import { Modem } from '../Modem';
 import { CommandResponse } from '../types';

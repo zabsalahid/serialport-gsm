@@ -1,4 +1,4 @@
-import { Deliver, parse as parsePdu, Report, Submit, utils as pduUtils } from '@killerjulian/node-pdu';
+import { Deliver, Report, Submit, parse as parsePdu, utils as pduUtils } from 'node-pdu';
 import { SerialPort } from 'serialport';
 import {
 	CommandResponse,
@@ -11,7 +11,7 @@ import {
 } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
-import { Events, EventTypes } from './utils/Events';
+import { EventTypes, Events } from './utils/Events';
 import { CmdStack, ModemMode, ModemOptions, resultCode, simplifyResponse } from './utils/utils';
 
 export class Modem {

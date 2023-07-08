@@ -1,4 +1,4 @@
-import { Deliver, Report, Submit } from '@killerjulian/node-pdu';
+import { Deliver, Report, Submit } from 'node-pdu';
 
 /*
  * public types
