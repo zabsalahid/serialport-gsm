@@ -1,22 +1,13 @@
 import { Deliver, Report, Submit, parse as parsePdu, utils as pduUtils } from 'node-pdu';
 import { SerialPort } from 'serialport';
-import {
-	CommandResponse,
-	ModemConstructorOptions,
-	PduSms,
-	SendSmsFailed,
-	SendSmsSuccess,
-	SerialPortOptions,
-	SimMemoryInformation
-} from './types';
+import { CommandResponse, ModemOptions, PduSms, SendSmsFailed, SendSmsSuccess, SerialPortOptions, SimMemoryInformation } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
 import { EventTypes, Events } from './utils/Events';
-import { CmdStack, ModemMode, ModemOptions, resultCode, simplifyResponse } from './utils/utils';
+import { CmdStack, ModemMode, resultCode, simplifyResponse } from './utils/utils';
 
 export class Modem {
 	// options
-	private readonly pinCode: string | null;
 	private readonly options: ModemOptions;
 
 	// system
@@ -24,17 +15,7 @@ export class Modem {
 	private readonly events = new Events();
 	private readonly cmdHandler: CommandHandler;
 
-	constructor(targetDevice: string, options: ModemConstructorOptions = {}) {
-		this.pinCode = options.pin || null;
-
-		this.options = {
-			deleteSmsOnReceive: options.deleteSmsOnReceive !== undefined ? options.deleteSmsOnReceive : false,
-			enableConcatenation: options.enableConcatenation !== undefined ? options.enableConcatenation : true,
-			customInitCommand: options.customInitCommand !== undefined ? options.customInitCommand : null,
-			autoInitOnOpen: options.autoInitOnOpen !== undefined ? options.autoInitOnOpen : true,
-			cnmiCommand: options.cnmiCommand !== undefined ? options.cnmiCommand : 'AT+CNMI=2,1,0,2,1'
-		};
-
+	constructor(targetDevice: string, options: Partial<ModemOptions> = {}) {
 		const serialPortOptions: SerialPortOptions = Object.assign(
 			// defaults
 			{
@@ -55,6 +36,16 @@ export class Modem {
 				autoOpen: false
 			}
 		);
+
+		this.options = {
+			pinCode: options.pinCode ?? null,
+			deleteSmsOnReceive: options.deleteSmsOnReceive ?? false,
+			enableConcatenation: options.enableConcatenation ?? true,
+			customInitCommand: options.customInitCommand ?? null,
+			autoInitOnOpen: options.autoInitOnOpen ?? true,
+			cnmiCommand: options.cnmiCommand ?? 'AT+CNMI=2,1,0,2,1',
+			serialPortOptions
+		};
 
 		this.port = new SerialPort(serialPortOptions);
 		this.cmdHandler = new CommandHandler(this, this.port, this.events);
@@ -117,7 +108,11 @@ export class Modem {
 	}
 
 	private async providePin(prio = false) {
-		const response = await simplifyResponse(this.executeATCommand(`AT+CPIN=${this.pinCode}`, prio));
+		if (!this.options.pinCode) {
+			throw new Error(`serialport-gsm/${this.port.path}: No pin was provided to unlock the modem!`);
+		}
+
+		const response = await simplifyResponse(this.executeATCommand(`AT+CPIN=${this.options.pinCode}`, prio));
 
 		if (resultCode(response) !== 'OK') {
 			throw new Error(`serialport-gsm/${this.port.path}: Modem could not be unlocked with pin!`);
@@ -213,10 +208,6 @@ export class Modem {
 		await this.setEchoMode(true, prio);
 
 		if (await this.checkPinRequired(prio)) {
-			if (this.pinCode === null) {
-				throw new Error(`serialport-gsm/${this.port.path}: The modem needs a pin!`);
-			}
-
 			await this.providePin(prio);
 		}
 

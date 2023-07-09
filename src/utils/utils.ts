@@ -15,14 +15,6 @@ export function resultCode(response: string) {
 
 export type ModemMode = 'PDU' | 'SMS';
 
-export interface ModemOptions {
-	deleteSmsOnReceive: boolean;
-	enableConcatenation: boolean;
-	customInitCommand: string | null;
-	autoInitOnOpen: boolean;
-	cnmiCommand: string;
-}
-
 export interface CmdStack {
 	cmds: Command[];
 	cancelOnFailure: boolean;

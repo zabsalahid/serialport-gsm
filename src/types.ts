@@ -4,16 +4,26 @@ import { Deliver, Report, Submit } from 'node-pdu';
  * public types
  */
 
-// ConstructorOptions
+// SerialPortOptions
 
-export interface ModemConstructorOptions {
-	pin?: string;
-	deleteSmsOnReceive?: boolean;
-	enableConcatenation?: boolean;
-	customInitCommand?: string;
-	autoInitOnOpen?: boolean;
-	cnmiCommand?: string;
-	serialPortOptions?: SerialPortOptions;
+import { AutoDetectTypes } from '@serialport/bindings-cpp';
+import { SerialPortOpenOptions } from 'serialport/dist/index';
+
+/**
+ * @see https://serialport.io/docs/api-bindings-cpp#open
+ */
+export type SerialPortOptions = SerialPortOpenOptions<AutoDetectTypes>;
+
+// Modem options
+
+export interface ModemOptions {
+	pinCode: string | null;
+	deleteSmsOnReceive: boolean;
+	enableConcatenation: boolean;
+	customInitCommand: string | null;
+	autoInitOnOpen: boolean;
+	cnmiCommand: string;
+	serialPortOptions: SerialPortOptions;
 }
 
 // public function types and event types
@@ -59,13 +69,3 @@ export interface PduSms {
 	pdu: Deliver | Report | Submit;
 	referencedSmsIDs?: number[];
 }
-
-// SerialPortOptions
-
-import { AutoDetectTypes } from '@serialport/bindings-cpp';
-import { SerialPortOpenOptions } from 'serialport/dist/index';
-
-/**
- * @see https://serialport.io/docs/api-bindings-cpp#open
- */
-export type SerialPortOptions = SerialPortOpenOptions<AutoDetectTypes>;
