@@ -1,20 +1,8 @@
 import { Deliver, Report, Submit } from 'node-pdu';
 
 /*
- * public types
+ * Modem options
  */
-
-// SerialPortOptions
-
-import { AutoDetectTypes } from '@serialport/bindings-cpp';
-import { SerialPortOpenOptions } from 'serialport/dist/index';
-
-/**
- * @see https://serialport.io/docs/api-bindings-cpp#open
- */
-export type SerialPortOptions = SerialPortOpenOptions<AutoDetectTypes>;
-
-// Modem options
 
 export interface ModemOptions {
 	pinCode: string | null;
@@ -23,10 +11,11 @@ export interface ModemOptions {
 	customInitCommand: string | null;
 	autoInitOnOpen: boolean;
 	cnmiCommand: string;
-	serialPortOptions: SerialPortOptions;
 }
 
-// public function types and event types
+/*
+ * Public function types and event types
+ */
 
 export { EventTypes } from './utils/Events';
 
@@ -69,3 +58,9 @@ export interface PduSms {
 	pdu: Deliver | Report | Submit;
 	referencedSmsIDs?: number[];
 }
+
+/*
+ * Types to build your own `Communicator`
+ */
+
+export { Communicator } from './utils/Communicator';

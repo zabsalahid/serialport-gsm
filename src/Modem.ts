@@ -1,54 +1,32 @@
 import { Deliver, Report, Submit, parse as parsePdu, utils as pduUtils } from 'node-pdu';
-import { SerialPort } from 'serialport';
-import { CommandResponse, ModemOptions, PduSms, SendSmsFailed, SendSmsSuccess, SerialPortOptions, SimMemoryInformation } from './types';
+import { CommandResponse, ModemOptions, PduSms, SendSmsFailed, SendSmsSuccess, SimMemoryInformation } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
+import { Communicator } from './utils/Communicator';
 import { EventTypes, Events } from './utils/Events';
-import { CmdStack, ModemMode, resultCode, simplifyResponse } from './utils/utils';
+import { CmdStack, ModemError, ModemMode, resultCode, simplifyResponse } from './utils/utils';
 
 export class Modem {
 	// options
 	private readonly options: ModemOptions;
 
 	// system
-	private readonly port: SerialPort;
+	private readonly communicator: Communicator;
 	private readonly events = new Events();
 	private readonly cmdHandler: CommandHandler;
 
-	constructor(targetDevice: string, options: Partial<ModemOptions> = {}) {
-		const serialPortOptions: SerialPortOptions = Object.assign(
-			// defaults
-			{
-				baudRate: 9600,
-				dataBits: 8,
-				stopBits: 1,
-				highWaterMark: 16384,
-				parity: 'none',
-				rtscts: false,
-				xon: false,
-				xoff: false
-			},
-			// options
-			options.serialPortOptions,
-			// overide options
-			{
-				path: targetDevice,
-				autoOpen: false
-			}
-		);
-
+	constructor(communicator: Communicator, options: Partial<ModemOptions> = {}) {
 		this.options = {
 			pinCode: options.pinCode ?? null,
 			deleteSmsOnReceive: options.deleteSmsOnReceive ?? false,
 			enableConcatenation: options.enableConcatenation ?? true,
 			customInitCommand: options.customInitCommand ?? null,
 			autoInitOnOpen: options.autoInitOnOpen ?? true,
-			cnmiCommand: options.cnmiCommand ?? 'AT+CNMI=2,1,0,2,1',
-			serialPortOptions
+			cnmiCommand: options.cnmiCommand ?? 'AT+CNMI=2,1,0,2,1'
 		};
 
-		this.port = new SerialPort(serialPortOptions);
-		this.cmdHandler = new CommandHandler(this, this.port, this.events);
+		this.communicator = communicator;
+		this.cmdHandler = new CommandHandler(this, this.communicator, this.events);
 
 		this.on('onNewSms', (id) => this.options.deleteSmsOnReceive && this.deleteSms(id).catch());
 	}
@@ -57,12 +35,12 @@ export class Modem {
 	 * getter
 	 */
 
-	get targetDevice() {
-		return this.port.path;
+	get device() {
+		return `${this.communicator.constructor.name}-${this.communicator.deviceIndentifier}`;
 	}
 
 	get isOpen() {
-		return this.port.isOpen;
+		return this.communicator.isConnected;
 	}
 
 	get queueLength() {
@@ -77,7 +55,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+CPIN?', prio));
 
 		if (!response.toUpperCase().startsWith('+CPIN:') || response.toUpperCase().includes('ERROR')) {
-			throw new Error(`serialport-gsm/${this.port.path}: Failed to detect if the modem requires a pin!`);
+			throw new ModemError(this, 'Failed to detect if the modem requires a pin!');
 		}
 
 		return !response.toUpperCase().includes('READY');
@@ -87,7 +65,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+CLIP=1', prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Modem clip can not be activated!`);
+			throw new ModemError(this, 'Modem clip can not be activated!');
 		}
 	}
 
@@ -95,7 +73,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand(this.options.cnmiCommand, prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Failed to execute the cnmiCommand!`);
+			throw new ModemError(this, 'Failed to execute the cnmiCommand!');
 		}
 	}
 
@@ -103,19 +81,19 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand(enable ? 'ATE1' : 'ATE0', prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Modem echo can not be activated!`);
+			throw new ModemError(this, 'Modem echo can not be activated!');
 		}
 	}
 
 	private async providePin(prio = false) {
 		if (!this.options.pinCode) {
-			throw new Error(`serialport-gsm/${this.port.path}: No pin was provided to unlock the modem!`);
+			throw new ModemError(this, 'No pin was provided to unlock the modem!');
 		}
 
 		const response = await simplifyResponse(this.executeATCommand(`AT+CPIN=${this.options.pinCode}`, prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Modem could not be unlocked with pin!`);
+			throw new ModemError(this, 'Modem could not be unlocked with pin!');
 		}
 	}
 
@@ -123,7 +101,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('ATZ', prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Modem failed to reset!`);
+			throw new ModemError(this, 'Modem failed to reset!');
 		}
 	}
 
@@ -131,7 +109,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand(`AT+CMGF=${mode === 'PDU' ? 0 : 1}`, prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: The setting of the mode failed!`);
+			throw new ModemError(this, 'The setting of the mode failed!');
 		}
 
 		if (mode === 'PDU') {
@@ -144,19 +122,11 @@ export class Modem {
 	 */
 
 	async open() {
-		if (this.port.isOpen) {
+		if (this.communicator.isConnected) {
 			return;
 		}
 
-		await new Promise((resolve: (success: true) => void, reject: (error: Error) => void) => {
-			this.port.open((error) => {
-				if (error !== null) {
-					reject(error);
-				}
-
-				resolve(true);
-			});
-		});
+		await this.communicator.connect();
 
 		this.events.emit('onOpen');
 		this.cmdHandler.startProcessing();
@@ -169,20 +139,11 @@ export class Modem {
 	async close() {
 		this.cmdHandler.stopProcessing();
 
-		if (!this.port.isOpen) {
+		if (!this.communicator.isConnected) {
 			return;
 		}
 
-		await new Promise((resolve: (success: true) => void, reject: (error: Error) => void) => {
-			this.port.close((error) => {
-				if (error !== null) {
-					reject(error);
-				}
-
-				resolve(true);
-			});
-		});
-
+		await this.communicator.disconnect();
 		this.events.emit('onClose');
 	}
 
@@ -215,7 +176,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand(initCommand, prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Initialization of the modem failed`);
+			throw new ModemError(this, 'Initialization of the modem failed');
 		}
 
 		await this.setMode('PDU', prio);
@@ -228,7 +189,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT', prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Check modem failed because the response from the modem was invalid!`);
+			throw new ModemError(this, 'Check modem failed because the response from the modem was invalid!');
 		}
 
 		return { status: 'OK' };
@@ -244,7 +205,7 @@ export class Modem {
 	async sendPdu<T extends Submit | Deliver>(pdu: T, prio = false) {
 		const checkReponse = (response: CommandResponse | Error) => {
 			if (response instanceof Error || resultCode(response.pop() || '') !== 'OK') {
-				throw new Error(`serialport-gsm/${this.port.path}: Failed to send SMS!`);
+				throw new ModemError(this, 'Failed to send SMS!');
 			}
 		};
 
@@ -304,13 +265,13 @@ export class Modem {
 		const response = await this.executeATCommand('AT+CSQ', prio);
 
 		if (resultCode(response.pop() || '') !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: The network signal could not be read!`);
+			throw new ModemError(this, 'The network signal could not be read!');
 		}
 
 		const signal = Number(response[0]?.match(/(\d+)(,\d+)?/g)?.[0]?.replace(',', '.') || NaN);
 
 		if (isNaN(signal) || signal < 0 || signal > 31) {
-			throw new Error(`serialport-gsm/${this.port.path}: The signal strength could not be parsed!`);
+			throw new ModemError(this, 'The signal strength could not be parsed!');
 		}
 
 		return {
@@ -323,7 +284,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+COPS?', prio));
 
 		if (!response.toUpperCase().startsWith('+COPS: ') || response.toUpperCase().includes('ERROR')) {
-			throw new Error(`serialport-gsm/${this.port.path}: The network signal could not be read!`);
+			throw new ModemError(this, 'The network signal could not be read!');
 		}
 
 		const splitedResponse = response.substring(7).split(',');
@@ -342,7 +303,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+COPS=?', prio, 60000));
 
 		if (!response.toUpperCase().startsWith('+COPS: ') || response.toUpperCase().includes('ERROR')) {
-			throw new Error(`serialport-gsm/${this.port.path}: The network signal could not be read!`);
+			throw new ModemError(this, 'The network signal could not be read!');
 		}
 
 		const result = [];
@@ -369,14 +330,14 @@ export class Modem {
 		const response = await this.executeATCommand('AT+CPMS="SM"', prio);
 
 		if (resultCode(response.pop() || '') !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: The required memory space of the SMS, could not be read!`);
+			throw new ModemError(this, 'The required memory space of the SMS, could not be read!');
 		}
 
 		const used = Number(response[0]?.match(/\d+/g)?.[0] || NaN);
 		const total = Number(response[0]?.match(/\d+/g)?.[1] || NaN);
 
 		if (isNaN(used) || isNaN(total)) {
-			throw new Error(`serialport-gsm/${this.port.path}: The required memory space of the SMS, could not be parsed!`);
+			throw new ModemError(this, 'The required memory space of the SMS, could not be parsed!');
 		}
 
 		const result = { used, total };
@@ -392,7 +353,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+CPBS="ON"', prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: The storage of the phone book could not be selected!`);
+			throw new ModemError(this, 'The storage of the phone book could not be selected!');
 		}
 	}
 
@@ -400,7 +361,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand(`AT+CPBW=1,"${phoneNumber}",129,"${name}"`, prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: The entry could not be written in the phone book!`);
+			throw new ModemError(this, 'The entry could not be written in the phone book!');
 		}
 	}
 
@@ -413,7 +374,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+CGSN', prio));
 
 		if (!/^\d+$/.test(response) || response.toUpperCase().includes('ERROR')) {
-			throw new Error(`serialport-gsm/${this.port.path}: Cannot read the serial number of the modem!`);
+			throw new ModemError(this, 'Cannot read the serial number of the modem!');
 		}
 
 		return response;
@@ -423,7 +384,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+CNUM', prio));
 
 		if (!response.toUpperCase().startsWith('+CNUM') || response.toUpperCase().includes('ERROR')) {
-			throw new Error(`serialport-gsm/${this.port.path}: The own phone number could not be read!`);
+			throw new ModemError(this, 'The own phone number could not be read!');
 		}
 
 		const regExp = /"(.*?)"/g;
@@ -433,7 +394,7 @@ export class Modem {
 		const phoneNumber = regExp.exec(splitedResponse[1] || '')?.[1];
 
 		if (name === undefined || phoneNumber === undefined) {
-			throw new Error(`serialport-gsm/${this.port.path}: The own phone number could not be parsed!`);
+			throw new ModemError(this, 'The own phone number could not be parsed!');
 		}
 
 		return { name, phoneNumber };
@@ -443,7 +404,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('ATH', prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: The hang up of the call failed!`);
+			throw new ModemError(this, 'The hang up of the call failed!');
 		}
 	}
 
@@ -451,7 +412,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand(`AT+CUSD=1,"${command}",15`, prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Execution USSD failed failed!`);
+			throw new ModemError(this, 'Execution USSD failed failed!');
 		}
 	}
 
@@ -459,7 +420,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand('AT+CMGD=1,4', prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Deleting all SMS messages failed!`);
+			throw new ModemError(this, 'Deleting all SMS messages failed!');
 		}
 	}
 
@@ -467,7 +428,7 @@ export class Modem {
 		const response = await simplifyResponse(this.executeATCommand(`AT+CMGD=${id}`, prio));
 
 		if (resultCode(response) !== 'OK') {
-			throw new Error(`serialport-gsm/${this.port.path}: Deleting SMS message failed!`);
+			throw new ModemError(this, 'Deleting SMS message failed!');
 		}
 	}
 
@@ -492,7 +453,7 @@ export class Modem {
 		const reponse = await this.executeATCommand(`AT+CMGR=${id}`, prio);
 
 		if (resultCode(reponse.pop() || '') !== 'OK' || reponse.length % 2 !== 0) {
-			throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS (${id}) failed!`);
+			throw new ModemError(this, `Reading the SMS (${id}) failed!`);
 		}
 
 		let preInformation;
@@ -534,14 +495,14 @@ export class Modem {
 			}
 		}
 
-		throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS (${id}) failed!`);
+		throw new ModemError(this, `Reading the SMS (${id}) failed!`);
 	}
 
 	async getSimInbox(prio = false) {
 		const reponse = await this.executeATCommand('AT+CMGL=4', prio);
 
 		if (resultCode(reponse.pop() || '') !== 'OK' || reponse.length % 2 !== 0) {
-			throw new Error(`serialport-gsm/${this.port.path}: Reading the SMS inbox failed!`);
+			throw new ModemError(this, 'Reading the SMS inbox failed!');
 		}
 
 		let preInformation;
