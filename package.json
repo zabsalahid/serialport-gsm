@@ -1,13 +1,13 @@
 {
   "name": "serialport-gsm",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Serialport implementation for GSM commands (send text/flash messages, read, etc.)",
   "main": "lib/",
   "directories": {
     "lib": "lib"
   },
   "dependencies": {
-    "node-pdu": "^1.0.15",
+    "node-pdu": "^2.0.1",
     "serialport": "^10.5.0"
   },
   "devDependencies": {
