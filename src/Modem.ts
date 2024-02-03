@@ -1,9 +1,9 @@
 import { Deliver, Report, Submit, parse as parsePdu, utils as pduUtils } from 'node-pdu';
-import { CommandResponse, ModemOptions, PduSms, SendSmsFailed, SendSmsSuccess, SimMemoryInformation } from './types';
 import { Command } from './utils/Command';
 import { CommandHandler } from './utils/CommandHandler';
 import { Communicator } from './utils/Communicator';
 import { EventTypes, Events } from './utils/Events';
+import { CommandResponse, ModemOptions, PduSms, SendSmsFailed, SendSmsSuccess, SimMemoryInformation } from './utils/types';
 import { CmdStack, ModemError, ModemMode, resultCode, simplifyResponse } from './utils/utils';
 
 export class Modem {

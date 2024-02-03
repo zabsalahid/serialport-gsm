@@ -1,4 +1,4 @@
-import { CommandResponse } from '../types';
+import { CommandResponse } from './types';
 
 export class Command {
 	deprecated = false;

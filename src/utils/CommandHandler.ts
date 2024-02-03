@@ -1,9 +1,9 @@
 import { utils as pduUtils } from 'node-pdu';
 import { Modem } from '../Modem';
-import { CommandResponse } from '../types';
 import { Command } from './Command';
 import { Communicator } from './Communicator';
 import { Events } from './Events';
+import { CommandResponse } from './types';
 import { CmdStack } from './utils';
 
 export class CommandHandler {

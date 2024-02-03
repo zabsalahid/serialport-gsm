@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { CommandResponse, OnIncomingCall, OnIncomingUSSD, SendSmsFailed, SendSmsSuccess, SimMemoryInformation } from '../types';
+import { CommandResponse, OnIncomingCall, OnIncomingUSSD, SendSmsFailed, SendSmsSuccess, SimMemoryInformation } from './types';
 
 export class Events extends EventEmitter {
 	constructor() {

@@ -17,7 +17,7 @@ export type ModemOptions = {
  * Public function types and event types
  */
 
-export { EventTypes } from './utils/Events';
+export { EventTypes } from './Events';
 
 export type CommandResponse = string[];
 export type OnIncomingCall = { phoneNumber: string; scheme: string };
@@ -63,4 +63,4 @@ export type PduSms = {
  * Types to build your own `Communicator`
  */
 
-export { Communicator } from './utils/Communicator';
+export { Communicator } from './Communicator';

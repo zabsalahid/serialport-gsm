@@ -1,6 +1,6 @@
 import { Modem } from '../Modem';
-import { CommandResponse } from '../types';
 import { Command } from './Command';
+import { CommandResponse } from './types';
 
 export async function simplifyResponse(response: Promise<CommandResponse>) {
 	return (await response)[0] || '';
