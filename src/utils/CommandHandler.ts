@@ -6,6 +6,9 @@ import { Events } from './Events';
 import { CommandResponse } from './types';
 import { CmdStack } from './utils';
 
+/**
+ * Handles the execution and processing of AT commands for the modem.
+ */
 export class CommandHandler {
 	// references
 	private readonly modem: Modem;
@@ -33,9 +36,18 @@ export class CommandHandler {
 	}
 
 	/*
-	 * sending commands
+	 * ================================================
+	 *            Sending commands to modem
+	 * ================================================
 	 */
 
+	/**
+	 * Executes the next command in the queue.
+	 * Locks the execution to prevent concurrent command execution.
+	 * Resolves once the command is executed.
+	 *
+	 * @returns The executed command or `undefined` if no command is available.
+	 */
 	private async executeNextCmd() {
 		if (this.isLocked || !this.communicator.isConnected) {
 			return;
@@ -73,6 +85,13 @@ export class CommandHandler {
 		return item;
 	}
 
+	/**
+	 * Executes a single AT command.
+	 * Resolves with the command response or an error if the command times out or encounters an issue.
+	 *
+	 * @param cmd The AT command to execute.
+	 * @returns The command response or an error if the command fails.
+	 */
 	private async executeCMD(cmd: Command) {
 		const result = await new Promise((resolve: (result: CommandResponse | Error) => void) => {
 			if (cmd.deprecated) {
@@ -119,9 +138,17 @@ export class CommandHandler {
 	}
 
 	/*
-	 * receiving data
+	 * ================================================
+	 *            Receiving data from modem
+	 * ================================================
 	 */
 
+	/**
+	 * Handles the data received from the modem.
+	 * Processes the received data, emits events, and triggers command responses.
+	 *
+	 * @param received The received data from the modem.
+	 */
 	private dataReceived(received: string) {
 		this.receivedData += received;
 		const parts = this.receivedData.split('\r\n');
@@ -216,9 +243,14 @@ export class CommandHandler {
 	}
 
 	/*
-	 * public functions
+	 * ================================================
+	 *                 Public functions
+	 * ================================================
 	 */
 
+	/**
+	 * Starts processing the command queue.
+	 */
 	startProcessing() {
 		if (this.interval !== null) {
 			return;
@@ -227,6 +259,9 @@ export class CommandHandler {
 		this.interval = setInterval(() => this.executeNextCmd().catch(() => (this.isLocked = false)), 10);
 	}
 
+	/**
+	 * Stops processing the command queue.
+	 */
 	stopProcessing() {
 		if (this.interval === null) {
 			return;
@@ -236,6 +271,12 @@ export class CommandHandler {
 		this.interval = null;
 	}
 
+	/**
+	 * Adds a command or command stack to the processing queue.
+	 *
+	 * @param cmd The command or command stack to add to the queue.
+	 * @param prio If true, adds the command to the priority queue; otherwise, adds it to the regular queue.
+	 */
 	pushToQueue(cmd: Command | CmdStack, prio = false) {
 		if (prio) {
 			this.prioQueue.push(cmd);
