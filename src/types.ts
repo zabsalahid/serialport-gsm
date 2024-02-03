@@ -4,14 +4,14 @@ import { Deliver, Report, Submit } from 'node-pdu';
  * Modem options
  */
 
-export interface ModemOptions {
+export type ModemOptions = {
 	pinCode: string | null;
 	deleteSmsOnReceive: boolean;
 	enableConcatenation: boolean;
 	customInitCommand: string | null;
 	autoInitOnOpen: boolean;
 	cnmiCommand: string;
-}
+};
 
 /*
  * Public function types and event types
@@ -23,12 +23,12 @@ export type CommandResponse = string[];
 export type OnIncomingCall = { phoneNumber: string; scheme: string };
 export type OnIncomingUSSD = { text?: string; follow?: string; followCode?: number };
 
-export interface SimMemoryInformation {
+export type SimMemoryInformation = {
 	used: number;
 	total: number;
-}
+};
 
-export interface SendSmsSuccess<T extends Deliver | Submit = Deliver | Submit> {
+export type SendSmsSuccess<T extends Deliver | Submit = Deliver | Submit> = {
 	success: true;
 	data: {
 		message: string;
@@ -36,9 +36,9 @@ export interface SendSmsSuccess<T extends Deliver | Submit = Deliver | Submit> {
 		alert: boolean;
 		pdu: T;
 	};
-}
+};
 
-export interface SendSmsFailed<T extends Deliver | Submit = Deliver | Submit> {
+export type SendSmsFailed<T extends Deliver | Submit = Deliver | Submit> = {
 	success: false;
 	data: {
 		message: string;
@@ -47,9 +47,9 @@ export interface SendSmsFailed<T extends Deliver | Submit = Deliver | Submit> {
 		pdu: T;
 	};
 	error: Error;
-}
+};
 
-export interface PduSms {
+export type PduSms = {
 	index: number;
 	status: number;
 	sender?: string;
@@ -57,7 +57,7 @@ export interface PduSms {
 	timestamp?: string;
 	pdu: Deliver | Report | Submit;
 	referencedSmsIDs?: number[];
-}
+};
 
 /*
  * Types to build your own `Communicator`
