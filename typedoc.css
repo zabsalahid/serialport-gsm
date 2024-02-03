@@ -1,21 +1,35 @@
+/*
+ * ==========================================
+ *    Customised CSS for the documentation
+ * ==========================================
+ */
+
+/*
+ * Code blocks:
+ */
+
 pre {
 	border-radius: 0.5em;
-}
-
-hr {
-	margin-top: 1.5rem;
-	margin-bottom: 1.5rem;
 }
 
 code,
 pre {
 	border: none;
 	border-radius: 0.5em;
+	margin: 1em 0;
 }
+
+/*
+ * Topbar:
+ */
 
 .tsd-page-toolbar {
 	border: none;
 }
+
+/*
+ * Baseboard:
+ */
 
 .tsd-generator {
 	border-top: none;
@@ -23,9 +37,19 @@ pre {
 	filter: brightness(1.1);
 }
 
-.menu-sticky-wrap {
-	margin-bottom: 1rem;
+.tsd-generator > p {
+	padding-left: 2rem;
 }
+
+@media (min-width: 770px) {
+	.tsd-generator > p {
+		padding-left: 3rem;
+	}
+}
+
+/*
+ * Type definition groups:
+ */
 
 .tsd-member-group {
 	padding: 1.3em;
@@ -44,12 +68,4 @@ pre {
 
 .tsd-description .tsd-signatures .tsd-signature {
 	border-radius: 0.5em;
-}
-
-/*
- * Error in the display "Index-Content" fixed
- */
-
-.tsd-index-section {
-	display: block !important;
 }
