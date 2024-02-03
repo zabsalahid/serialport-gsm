@@ -15,10 +15,13 @@ npm i serialport-gsm
 Usage in JavaScript/TypeScript (with ES Modules):
 
 ```typescript
-import { Modem } from 'serialport-gsm';
+import { Modem, SerialPortCommunicator } from 'serialport-gsm';
+
+// Initialize a SerialPortCommunicator. For more options take a look at the full documentaion
+const serialPortCommunicator = new SerialPortCommunicator('COM4');
 
 // Initalization of the modem. For more options take a look at the full documentaion
-const myModem = new Modem('COM4');
+const myModem = new Modem(serialPortCommunicator);
 
 // You can listen to different events
 myModem.on('onWriteToModem', (data) => console.log('>:', data.replace(/\n|\r/g, '')));

@@ -1,3 +1,4 @@
+import { Modem } from '../Modem';
 import { CommandResponse } from '../types';
 import { Command } from './Command';
 
@@ -11,6 +12,12 @@ export function resultCode(response: string) {
 	}
 
 	return 'OK';
+}
+
+export class ModemError extends Error {
+	constructor(modem: Modem, message: string) {
+		super(`serialport-gsm/${modem.device}: ${message}`);
+	}
 }
 
 export type ModemMode = 'PDU' | 'SMS';

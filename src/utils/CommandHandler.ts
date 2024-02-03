@@ -1,15 +1,15 @@
 import { utils as pduUtils } from 'node-pdu';
-import { SerialPort } from 'serialport';
 import { Modem } from '../Modem';
 import { CommandResponse } from '../types';
 import { Command } from './Command';
+import { Communicator } from './Communicator';
 import { Events } from './Events';
 import { CmdStack } from './utils';
 
 export class CommandHandler {
 	// references
 	private readonly modem: Modem;
-	private readonly serialPort: SerialPort;
+	private readonly communicator: Communicator;
 	private readonly events: Events;
 
 	// queued commands
@@ -24,12 +24,12 @@ export class CommandHandler {
 	private receivedData = '';
 	private receivedCmdResponse: CommandResponse = [];
 
-	constructor(modem: Modem, serialPort: SerialPort, events: Events) {
+	constructor(modem: Modem, communicator: Communicator, events: Events) {
 		this.modem = modem;
-		this.serialPort = serialPort;
+		this.communicator = communicator;
 		this.events = events;
 
-		this.serialPort.on('data', (data) => this.dataReceived(data));
+		this.communicator.setOnResiveFunc((data) => this.dataReceived(data));
 	}
 
 	/*
@@ -37,7 +37,7 @@ export class CommandHandler {
 	 */
 
 	private async executeNextCmd() {
-		if (this.isLocked || !this.serialPort.isOpen) {
+		if (this.isLocked || !this.communicator.isConnected) {
 			return;
 		}
 
@@ -82,7 +82,7 @@ export class CommandHandler {
 			const write = `${cmd.ATCommand}\r`;
 
 			this.events.emit('onWriteToModem', write);
-			this.serialPort.write(write);
+			this.communicator.write(write);
 
 			if (cmd.awaitResponse === false) {
 				return setTimeout(() => resolve([]), cmd.timeout);
@@ -122,8 +122,8 @@ export class CommandHandler {
 	 * receiving data
 	 */
 
-	private dataReceived(received: Buffer) {
-		this.receivedData += received.toString();
+	private dataReceived(received: string) {
+		this.receivedData += received;
 		const parts = this.receivedData.split('\r\n');
 		this.receivedData = parts.pop() || '';
 
