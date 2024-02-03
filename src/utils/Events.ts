@@ -1,7 +1,26 @@
 import { EventEmitter } from 'events';
 import { CommandResponse, OnIncomingCall, OnIncomingUSSD, SendSmsFailed, SendSmsSuccess, SimMemoryInformation } from '../types';
 
-export interface EventTypes {
+export class Events extends EventEmitter {
+	constructor() {
+		super();
+		this.setMaxListeners(50);
+	}
+
+	emit<T extends keyof EventTypes>(event: T, ...parameters: Parameters<EventTypes[T]>) {
+		return super.emit(event, ...parameters);
+	}
+
+	on<T extends keyof EventTypes>(event: T, listener: EventTypes[T]) {
+		return super.on(event, listener);
+	}
+
+	once<T extends keyof EventTypes>(event: T, listener: EventTypes[T]) {
+		return super.once(event, listener);
+	}
+}
+
+export type EventTypes = {
 	onOpen: () => void;
 	onClose: () => void;
 	onInitialized: () => void;
@@ -16,15 +35,4 @@ export interface EventTypes {
 	onMemoryFull: (data: SimMemoryInformation) => void;
 }
 
-export declare interface Events {
-	emit<T extends keyof EventTypes>(event: T, ...parameters: Parameters<EventTypes[T]>): boolean;
-	on<T extends keyof EventTypes>(event: T, listener: EventTypes[T]): this;
-	once<T extends keyof EventTypes>(event: T, listener: EventTypes[T]): this;
-}
 
-export class Events extends EventEmitter {
-	constructor() {
-		super();
-		this.setMaxListeners(50);
-	}
-}
