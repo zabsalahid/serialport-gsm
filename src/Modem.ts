@@ -106,13 +106,13 @@ export class Modem {
 	}
 
 	private async setMode(mode: ModemMode, prio = false) {
-		const response = await simplifyResponse(this.executeATCommand(`AT+CMGF=${mode === 'PDU' ? 0 : 1}`, prio));
+		const response = await simplifyResponse(this.executeATCommand(`AT+CMGF=${mode === ModemMode.PDU ? 0 : 1}`, prio));
 
 		if (resultCode(response) !== 'OK') {
 			throw new ModemError(this, 'The setting of the mode failed!');
 		}
 
-		if (mode === 'PDU') {
+		if (mode === ModemMode.PDU) {
 			await this.enableCNMI(prio);
 		}
 	}
@@ -179,7 +179,7 @@ export class Modem {
 			throw new ModemError(this, 'Initialization of the modem failed');
 		}
 
-		await this.setMode('PDU', prio);
+		await this.setMode(ModemMode.PDU, prio);
 		await this.enableClip(prio);
 
 		this.events.emit('onInitialized');

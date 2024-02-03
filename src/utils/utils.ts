@@ -20,7 +20,10 @@ export class ModemError extends Error {
 	}
 }
 
-export type ModemMode = 'PDU' | 'SMS';
+export enum ModemMode {
+	PDU = 'PDU',
+	TEXT = 'TEXT'
+}
 
 export interface CmdStack {
 	cmds: Command[];
