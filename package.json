@@ -8,8 +8,10 @@
 	"types": "./dist/index.d.ts",
 	"dependencies": {
 		"node-pdu": "2.0.0",
-		"serialport": "^11.0.0",
 		"tslib": "^2.6.0"
+	},
+	"peerDependencies": {
+		"serialport": "^11.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^16.18.38",
