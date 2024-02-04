@@ -48,7 +48,7 @@ export class SerialPortCommunicator implements Communicator {
 	 * @returns The device identifier.
 	 */
 	get deviceIndentifier() {
-		return `${this.serialPort.path}-${this.device}`;
+		return `serialport-${this.serialPort.path}-${this.device}`;
 	}
 
 	/**
